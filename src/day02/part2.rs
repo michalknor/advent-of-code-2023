@@ -32,9 +32,14 @@ fn evaluate_game(modified_line: &str) -> u32 {
 	max_red * max_green * max_blue
 }
 
-pub fn main() -> std::io::Result<()> {
-	println!("{}", std::env::current_dir().unwrap().display());
-	let file_content: &str = include_str!("input.txt");
+pub fn main(testing: bool) {
+	let file_content: &str;
+	if testing {
+		file_content = include_str!("test.txt");
+	}
+	else {
+		file_content = include_str!("input.txt");
+	}
 
 	let mut result: u32 = 0;
 	let mut id: u32 = 1;
@@ -47,6 +52,4 @@ pub fn main() -> std::io::Result<()> {
     }
 
 	println!("{}", result);
-
-    Ok(())
 }

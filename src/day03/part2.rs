@@ -82,10 +82,16 @@ fn evaluate_schematic(schematic: Vec<Vec<char>>) -> u32 {
 }
 
 
-pub fn main() -> std::io::Result<()> {
-	let schematic: Vec<Vec<char>> = include_str!("input.txt").lines().map(|line| line.chars().collect()).collect();
+pub fn main(testing: bool) {
+	let file_content: &str;
+	if testing {
+		file_content = include_str!("test.txt");
+	}
+	else {
+		file_content = include_str!("input.txt");
+	}
+	
+	let schematic: Vec<Vec<char>> = file_content.lines().map(|line| line.chars().collect()).collect();
 
 	println!("{}", evaluate_schematic(schematic));
-
-    Ok(())
 }

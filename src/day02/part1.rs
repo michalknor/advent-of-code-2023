@@ -34,8 +34,14 @@ fn evaluate_game(modified_line: &str, game_id: u32) -> u32 {
 	game_id
 }
 
-pub fn main() -> std::io::Result<()> {
-	let file_content: &str = include_str!("input.txt");
+pub fn main(testing: bool) {
+	let file_content: &str;
+	if testing {
+		file_content = include_str!("test.txt");
+	}
+	else {
+		file_content = include_str!("input.txt");
+	}
 
 	let mut result = 0;
 	let mut id: u32 = 1;
@@ -47,6 +53,4 @@ pub fn main() -> std::io::Result<()> {
     }
 
 	println!("{}", result);
-
-    Ok(())
 }

@@ -1,5 +1,11 @@
-pub fn main() -> std::io::Result<()> {
-	let file_content: &str = include_str!("input.txt");
+pub fn main(testing: bool) {
+	let file_content: &str;
+	if testing {
+		file_content = include_str!("test.txt");
+	}
+	else {
+		file_content = include_str!("input.txt");
+	}
 
 	let mut result: u32 = 0;
 	for line in file_content.lines() {
@@ -23,6 +29,4 @@ pub fn main() -> std::io::Result<()> {
     }
 
 	println!("{}", result);
-
-    Ok(())
 }
