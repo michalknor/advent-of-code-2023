@@ -1,12 +1,11 @@
-fn convert_seed_to_location(seed: u32, recipe: &Vec<Vec<u32>>) -> u32 {
-	let mut location: u32 = seed;
-
+fn convert_seed_to_location(seed: u64, recipe: &Vec<Vec<u64>>) -> u64 {
 	for conversion in recipe {
-		let conversion_from = conversion[0];
-		let conversion_to = conversion[1];
-		let conversion_add = conversion[2];
-		if conversion_from <= seed && seed <= conversion_to {
-			return seed + conversion_add;
+		let conversion_to = conversion[0];
+		let conversion_from = conversion[1];
+		let conversion_range = conversion[2];
+
+		if conversion_from <= seed && seed <= conversion_from + conversion_range {
+			return conversion_to + seed - conversion_from;
 		}
 	}
 
@@ -22,11 +21,10 @@ pub fn main(testing: bool) {
 	else {
 		file_content = include_str!("input.txt");
 	}
+	
+	let seeds: Vec<u64> = file_content.lines().next().unwrap().trim_start_matches("seeds: ").split(" ").map(|s| s.parse::<u64>().unwrap()).collect();
 
-	let mut seeds: Vec<u32> = file_content.lines().next().unwrap().trim_start_matches("seeds: ").split(" ").map(|s| s.parse::<u32>().unwrap()).collect();
-	let mut locations: Vec<u32> = Vec::new();
-
-	let mut recipes: Vec<Vec<Vec<u32>>> = Vec::new();
+	let mut recipes: Vec<Vec<Vec<u64>>> = Vec::new();
 	
 	for line in file_content.lines().skip(1) {
 		if line == "" {
@@ -39,21 +37,27 @@ pub fn main(testing: bool) {
 		}
 
 		recipes.last_mut().unwrap().push(
-			line.split(" ").map(|s| s.parse::<u32>().unwrap()).collect()
+			line.split(" ").map(|s| s.parse::<u64>().unwrap()).collect()
 		);
-    }
-
-	for seed in seeds {
-		let mut location = seed;
-		for recipe in &recipes {
-			location = convert_seed_to_location(seed, &recipe);
-			break;
-		}
-
-		locations.push(location);
 	}
 
-	println!("{:?}", locations);
+	let mut min_location: u64 = u64::MAX;
+	let mut seeds_looped = 0;
+	let seeds_count = seeds.len();
 
-	println!("{}", locations.iter().min().unwrap());
+	for seed in seeds {
+		seeds_looped += 1;
+		let mut location = seed;
+
+		for recipe in &recipes {
+			location = convert_seed_to_location(location, &recipe);
+		}
+
+		if min_location > location {
+			min_location = location;
+			println!("i looped over {}/{} and seed {} has location {}", seeds_looped, seeds_count, seed, min_location);
+		}
+	}
+
+	println!("{}", min_location);
 }
