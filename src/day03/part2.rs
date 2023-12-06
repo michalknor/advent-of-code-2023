@@ -70,9 +70,9 @@ fn evaluate_schematic(schematic: Vec<Vec<char>>) -> u32 {
 		}
     }
 
-	for (_, value) in &gears {
+	for value in gears.values() {
 		if value.len() == 2 {
-			if let (Some(&first), Some(&second)) = (value.get(0), value.get(1)) {
+			if let (Some(&first), Some(&second)) = (value.first(), value.get(1)) {
 				result += first * second;
 			}
 		}

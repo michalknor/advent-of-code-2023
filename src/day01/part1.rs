@@ -13,14 +13,14 @@ pub fn main(testing: bool) {
 
 		for character in line.chars() {
 			if character.is_digit(10) {
-				first_digit = character.to_digit(10).unwrap_or_default() as u32;
+				first_digit = character.to_digit(10).unwrap_or_default();
 				break;
 			}
 		}
 		
 		for character in line.chars().rev() {
 			if character.is_digit(10) {
-				last_digit = character.to_digit(10).unwrap_or_default() as u32;
+				last_digit = character.to_digit(10).unwrap_or_default();
 				break;
 			}
 		}

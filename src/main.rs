@@ -27,10 +27,11 @@ fn main() -> std::io::Result<()> {
     function_map.insert("day03 part2", day03::part2::main as fn(bool));
 
     function_map.insert("day04 part1", day04::part1::main as fn(bool));
-    function_map.insert("day04 part2", day04::part2::main as fn(bool));
+    function_map.insert("day04 part2", day04::part2::main as fn(bool)); 
 
     function_map.insert("day05 part1", day05::part1::main as fn(bool));
     function_map.insert("day05 part2", day05::part2::main as fn(bool));
+    function_map.insert("day05 part2-brute-force", day05::part2::main2 as fn(bool));
 
     function_map.insert("day06 part1", day06::part1::main as fn(bool));
     function_map.insert("day06 part2", day06::part2::main as fn(bool));

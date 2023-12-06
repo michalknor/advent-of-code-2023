@@ -47,18 +47,14 @@ pub fn main(testing: bool) {
 
 		for character in line.chars() {
 			if character.is_digit(10) {
-				first_digit = character.to_digit(10).unwrap_or_default() as u32;
+				first_digit = character.to_digit(10).unwrap_or_default();
 				break;
 			}
 
 			string_so_far.push_str(&character.to_string());
-			match get_digit(&string_so_far) {
-				Some(digit) => {
-					first_digit = digit;
-					break;
-				}
-				None => {
-				}
+			if let Some(digit) = get_digit(&string_so_far) {
+				last_digit = digit;
+				break;
 			};
 		}
 
@@ -66,18 +62,14 @@ pub fn main(testing: bool) {
 		
 		for character in line.chars().rev() {
 			if character.is_digit(10) {
-				last_digit = character.to_digit(10).unwrap_or_default() as u32;
+				last_digit = character.to_digit(10).unwrap_or_default();
 				break;
 			}
 
 			string_so_far = character.to_string() + &string_so_far;
-			match get_digit(&string_so_far) {
-				Some(digit) => {
-					last_digit = digit;
-					break;
-				}
-				None => {
-				}
+			if let Some(digit) = get_digit(&string_so_far) {
+				last_digit = digit;
+				break;
 			};
 		}
 

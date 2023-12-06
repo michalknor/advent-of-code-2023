@@ -4,7 +4,7 @@ fn convert_seed_to_location(seed: u64, recipe: &Vec<Vec<u64>>) -> u64 {
 		let conversion_from = conversion[1];
 		let conversion_range = conversion[2];
 
-		if conversion_from <= seed && seed <= conversion_from + conversion_range - 1 {
+		if conversion_from <= seed && seed < conversion_from + conversion_range {
 			return conversion_to + seed - conversion_from;
 		}
 	}
@@ -27,7 +27,7 @@ pub fn main(testing: bool) {
 	let mut recipes: Vec<Vec<Vec<u64>>> = Vec::new();
 	
 	for line in file_content.lines().skip(1) {
-		if line == "" {
+		if line.is_empty() {
 			recipes.push(Vec::new());
 			continue;
 		}
@@ -47,7 +47,7 @@ pub fn main(testing: bool) {
 		let mut location = seed;
 
 		for recipe in &recipes {
-			location = convert_seed_to_location(location, &recipe);
+			location = convert_seed_to_location(location, recipe);
 		}
 
 		if min_location > location {

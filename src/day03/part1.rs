@@ -20,7 +20,7 @@ fn evaluate_schematic(schematic: Vec<Vec<char>>) -> u32 {
 			let mut adjacent_to_a_symbol_found_now = false;
 
 			if character.is_digit(10) {
-				part_number = part_number * 10 + character.to_digit(10).unwrap_or_default() as u32;
+				part_number = part_number * 10 + character.to_digit(10).unwrap_or_default();
 				found_digit = true;
 			}
 			else if !found_digit {
