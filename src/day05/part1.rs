@@ -4,7 +4,7 @@ fn convert_seed_to_location(seed: u64, recipe: &Vec<Vec<u64>>) -> u64 {
 		let conversion_from = conversion[1];
 		let conversion_range = conversion[2];
 
-		if conversion_from <= seed && seed <= conversion_from + conversion_range {
+		if conversion_from <= seed && seed <= conversion_from + conversion_range - 1 {
 			return conversion_to + seed - conversion_from;
 		}
 	}
@@ -42,11 +42,8 @@ pub fn main(testing: bool) {
 	}
 
 	let mut min_location: u64 = u64::MAX;
-	let mut seeds_looped = 0;
-	let seeds_count = seeds.len();
 
 	for seed in seeds {
-		seeds_looped += 1;
 		let mut location = seed;
 
 		for recipe in &recipes {
@@ -55,7 +52,6 @@ pub fn main(testing: bool) {
 
 		if min_location > location {
 			min_location = location;
-			println!("i looped over {}/{} and seed {} has location {}", seeds_looped, seeds_count, seed, min_location);
 		}
 	}
 
