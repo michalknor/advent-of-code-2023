@@ -5,6 +5,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 
 use std::time::Instant;
 use std::env;
@@ -30,6 +31,9 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day05 part1", day05::part1::main as fn(bool));
     function_map.insert("day05 part2", day05::part2::main as fn(bool));
+
+    function_map.insert("day06 part1", day06::part1::main as fn(bool));
+    function_map.insert("day06 part2", day06::part2::main as fn(bool));
 
     if args.len() == 1 {
         let mut sorted_keys: Vec<&&str> = function_map.keys().collect();
