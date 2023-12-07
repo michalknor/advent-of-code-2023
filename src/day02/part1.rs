@@ -35,14 +35,12 @@ fn evaluate_game(modified_line: &str, game_id: u32) -> u32 {
 }
 
 pub fn main(testing: bool) {
-	let file_content: &str;
-	if testing {
-		file_content = include_str!("test.txt");
+	let file_content: &str = if testing {
+		include_str!("test.txt")
 	}
 	else {
-		file_content = include_str!("input.txt");
-	}
-
+		include_str!("input.txt")
+	};
 	let mut result = 0;
 	let mut id: u32 = 1;
 	for line in file_content.lines() {

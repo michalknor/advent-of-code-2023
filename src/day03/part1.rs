@@ -1,7 +1,7 @@
 const IGNORED_CHARACTER: char = '.';
 
 fn is_symbol(character: &char) -> bool {
-	if character.is_digit(10) || character == &IGNORED_CHARACTER {
+	if character.is_ascii_digit() || character == &IGNORED_CHARACTER {
 		return false;
 	}
 	true
@@ -19,7 +19,7 @@ fn evaluate_schematic(schematic: Vec<Vec<char>>) -> u32 {
 		for (j, character) in row.iter().enumerate() {
 			let mut adjacent_to_a_symbol_found_now = false;
 
-			if character.is_digit(10) {
+			if character.is_ascii_digit() {
 				part_number = part_number * 10 + character.to_digit(10).unwrap_or_default();
 				found_digit = true;
 			}
@@ -67,13 +67,12 @@ fn evaluate_schematic(schematic: Vec<Vec<char>>) -> u32 {
 
 
 pub fn main(testing: bool) {
-	let file_content: &str;
-	if testing {
-		file_content = include_str!("test.txt");
+	let file_content: &str = if testing {
+		include_str!("test.txt")
 	}
 	else {
-		file_content = include_str!("input.txt");
-	}
+		include_str!("input.txt")
+	};
 	
 	let schematic: Vec<Vec<char>> = file_content.lines().map(|line| line.chars().collect()).collect();
 

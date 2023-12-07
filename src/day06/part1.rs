@@ -23,19 +23,18 @@ fn number_of_ways_multiplied_together(times: Vec<u32>, distances: Vec<u32>) -> u
 
 
 pub fn main(testing: bool) {
-	let file_content: &str;
-	if testing {
-		file_content = include_str!("test.txt");
+	let file_content: &str = if testing {
+		include_str!("test.txt")
 	}
 	else {
-		file_content = include_str!("input.txt");
-	}
+		include_str!("input.txt")
+	};
 
 	let times: Vec<u32> = file_content
 		.lines()
 		.next()
 		.unwrap()
-		.split(" ")
+		.split(' ')
 		.skip(2)
 		.filter(|&s| !s.is_empty())
 		.map(|s| s.parse::<u32>().unwrap())
@@ -45,7 +44,7 @@ pub fn main(testing: bool) {
 		.lines()
 		.nth(1)
 		.unwrap()
-		.split(" ")
+		.split(' ')
 		.skip(2)
 		.filter(|&s| !s.is_empty())
 		.map(|s| s.parse::<u32>().unwrap())

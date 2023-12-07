@@ -19,7 +19,7 @@ pub fn main(testing: bool) {
 		include_str!("input.txt")
 	};
 
-	let time: u64 = file_content
+	let times: u64 = file_content
 		.lines()
 		.next()
 		.unwrap()
@@ -39,7 +39,5 @@ pub fn main(testing: bool) {
 		.parse()
     	.unwrap();
 
-	println!("{}, {}", time, distance);
-
-	println!("{}", number_of_ways_to_win_a_race(time, distance));
+	println!("{}", number_of_ways_to_win_a_race(times, distance));
 }
