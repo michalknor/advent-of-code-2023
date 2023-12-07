@@ -32,13 +32,12 @@ fn get_digit(string_so_far: &str) -> Option<u32> {
 }
 
 pub fn main(testing: bool) {
-	let file_content: &str;
-	if testing {
-		file_content = include_str!("test.txt");
+	let file_content: &str = if testing {
+		include_str!("test.txt")
 	}
 	else {
-		file_content = include_str!("input.txt");
-	}
+		include_str!("input.txt")
+	};
 
 	let mut result: u32 = 0;
 	for line in file_content.lines() {
@@ -46,7 +45,7 @@ pub fn main(testing: bool) {
 		let mut string_so_far = String::new();
 
 		for character in line.chars() {
-			if character.is_digit(10) {
+			if character.is_ascii_digit() {
 				first_digit = character.to_digit(10).unwrap_or_default();
 				break;
 			}
@@ -61,7 +60,7 @@ pub fn main(testing: bool) {
 		string_so_far = String::new();
 		
 		for character in line.chars().rev() {
-			if character.is_digit(10) {
+			if character.is_ascii_digit() {
 				last_digit = character.to_digit(10).unwrap_or_default();
 				break;
 			}

@@ -14,15 +14,14 @@ fn convert_seed_to_location(seed: u64, recipe: &Vec<Vec<u64>>) -> u64 {
 
 
 pub fn main(testing: bool) {
-	let file_content: &str;
-	if testing {
-		file_content = include_str!("test.txt");
+	let file_content: &str = if testing {
+		include_str!("test.txt")
 	}
 	else {
-		file_content = include_str!("input.txt");
-	}
+		include_str!("input.txt")
+	};
 	
-	let seeds: Vec<u64> = file_content.lines().next().unwrap().trim_start_matches("seeds: ").split(" ").map(|s| s.parse::<u64>().unwrap()).collect();
+	let seeds: Vec<u64> = file_content.lines().next().unwrap().trim_start_matches("seeds: ").split(' ').map(|s| s.parse::<u64>().unwrap()).collect();
 
 	let mut recipes: Vec<Vec<Vec<u64>>> = Vec::new();
 	
@@ -32,12 +31,12 @@ pub fn main(testing: bool) {
 			continue;
 		}
 
-		if line.contains(":") {
+		if line.contains(':') {
 			continue;
 		}
 
 		recipes.last_mut().unwrap().push(
-			line.split(" ").map(|s| s.parse::<u64>().unwrap()).collect()
+			line.split(' ').map(|s| s.parse::<u64>().unwrap()).collect()
 		);
 	}
 
