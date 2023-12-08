@@ -1,22 +1,37 @@
 use std::collections::HashMap;
 
+const STARTING_NODE: &str = "AAA";
+const DESTINATION_NODE: &str = "ZZZ";
 
-const DESTINATION: &str = "ZZZ";
 
+fn get_number_of_steps_to_reach_destination(
+	network: HashMap<&str, Vec<&str>>, 
+	instructions: &str,
+	starting_node: &str
+) -> u32 {
+	if starting_node == DESTINATION_NODE {
+		return 0;
+	}
 
-fn get_hand_strength(hand: &str) -> bool {
-    let label_counts: Vec<usize> = hand
-		    .chars()
-		    .collect::<Vec<char>>()
-		    .iter()
-		    .map(|&label| hand
-			    .chars()
-			    .filter(|&c| c == label)
-			    .count())
-		    .filter(|&c| c != 1)
-		    .collect();
+	let mut current_node = starting_node;
+	let mut number_of_steps: u32 = 0;
 
-	false
+	loop {
+		for instruction in instructions.chars() {
+			current_node = match instruction {
+				'L' => network[current_node][0],
+				'R' => network[current_node][1],
+				_ => panic!("wrong instruction")
+			};
+			number_of_steps += 1;
+
+			// println!("{number_of_steps}, {current_node}");
+
+			if current_node == DESTINATION_NODE {
+				return number_of_steps;
+			}
+		}
+	}
 }
 
 
@@ -34,29 +49,26 @@ pub fn main(testing: bool) {
 		.replace(',', "")
 		.replace(')', ""));
 
-	let result: Vec<&str> = file_content
+	let instructions: &str = file_content
+		.lines()
+		.next()
+		.unwrap();
+
+	let starting_node: &str = &file_content
 		.split_whitespace()
 		.skip(1)
-		.collect();
+		.next()
+		.unwrap();
 
-		println!("{:?}", result);
-	// let result: HashMap<_, _> = file_content
-	// 	.split_whitespace()
-	// 	.skip(2)
-	// 	.map(|line| {
-	// 		let mut parts = line.splitn(2, " = ");
-	// 		let key = parts.next().unwrap();
-	// 		let value = parts.next().unwrap();
-	// 		let vec_values: Vec<&str> = value[1..value.len() - 1].split(", ").collect();
-	// 		(key.to_string(), vec_values)
-    // 	}).collect();
+	let network: HashMap<&str, Vec<&str>> = file_content
+		.split_whitespace()
+		.skip(1)
+		.collect::<Vec<_>>()
+		.chunks_exact(3)
+		.map(|chunk| (chunk[0], vec![chunk[1], chunk[2]]))
+    	.collect::<HashMap<_, _>>();
 
-	// let result: HashMap<_, _> = result.chunks(3).map(|chunk| {
-    //     let key = chunk[0];
-    //     let value = chunk[2];
-    //     let vec_values: Vec<_> = value[1..value.len() - 1].split(", ").collect();
-    //     (key.to_string(), vec_values)
-    // }).collect();
+	println!("{:?}, {instructions}, {starting_node}", network);
+
+	println!("{}", get_number_of_steps_to_reach_destination(network, instructions, STARTING_NODE))
 }
-
-//250474325
