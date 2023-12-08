@@ -28,23 +28,35 @@ pub fn main(testing: bool) {
 		include_str!("input.txt")
 	};
 
+	let file_content = &(file_content
+		.replace('=', "")
+		.replace('(', "")
+		.replace(',', "")
+		.replace(')', ""));
+
 	let result: Vec<&str> = file_content
 		.split_whitespace()
 		.skip(1)
 		.collect();
 
-	let result: HashMap<_, _> = file_content
-		.split_whitespace()
-		.skip(1)
-		.map(|line| {
-			let mut parts = line.splitn(2, " = ");
-			let key = parts.next().unwrap();
-			let value = parts.next().unwrap();
-			let vec_values: Vec<&str> = value[1..value.len() - 1].split(", ").collect();
-			(key.to_string(), vec_values)
-    	}).collect();
+		println!("{:?}", result);
+	// let result: HashMap<_, _> = file_content
+	// 	.split_whitespace()
+	// 	.skip(2)
+	// 	.map(|line| {
+	// 		let mut parts = line.splitn(2, " = ");
+	// 		let key = parts.next().unwrap();
+	// 		let value = parts.next().unwrap();
+	// 		let vec_values: Vec<&str> = value[1..value.len() - 1].split(", ").collect();
+	// 		(key.to_string(), vec_values)
+    // 	}).collect();
 
-	println!("{:?}", result);
+	// let result: HashMap<_, _> = result.chunks(3).map(|chunk| {
+    //     let key = chunk[0];
+    //     let value = chunk[2];
+    //     let vec_values: Vec<_> = value[1..value.len() - 1].split(", ").collect();
+    //     (key.to_string(), vec_values)
+    // }).collect();
 }
 
 //250474325
