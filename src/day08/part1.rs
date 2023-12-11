@@ -25,8 +25,6 @@ fn get_number_of_steps_to_reach_destination(
 			};
 			number_of_steps += 1;
 
-			// println!("{number_of_steps}, {current_node}");
-
 			if current_node == DESTINATION_NODE {
 				return number_of_steps;
 			}
@@ -43,21 +41,16 @@ pub fn main(testing: bool) {
 		include_str!("input.txt")
 	};
 
-	let file_content = &(file_content
-		.replace('=', "")
-		.replace('(', "")
-		.replace(',', "")
-		.replace(')', ""));
-
+	let file_content = &(file_content.replace(['=', '(', ',', ')'], ""));
+	
 	let instructions: &str = file_content
 		.lines()
 		.next()
 		.unwrap();
 
-	let starting_node: &str = &file_content
+	let starting_node: &str = file_content
 		.split_whitespace()
-		.skip(1)
-		.next()
+		.nth(1)
 		.unwrap();
 
 	let network: HashMap<&str, Vec<&str>> = file_content

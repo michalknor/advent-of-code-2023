@@ -63,13 +63,9 @@ pub fn main(testing: bool) {
 
 		for recipe in recipes.iter().rev() {
 			seed = convert_location_to_seed(seed, recipe);
-			if location == 1493866 {
-				println!("{}, {}", location, seed);
-			}
 		}
 
 		if seed_in_ranges_of_seed_numbers(seed, &ranges_of_seed_numbers) {
-			println!("{}, {}", location, seed);
 			break location;
 		}
 
