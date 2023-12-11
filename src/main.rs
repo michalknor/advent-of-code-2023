@@ -83,6 +83,17 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+#[cfg(test)]
+mod tests {
+    use crate::day08;
+    #[test]
+    fn my_test() {
+        let result: u32 = 2;
+        // Your test assertions here
+        assert_eq!(day08::part2::ttt(), result);
+    }
+}
+
 
 // fn main() {
 //     println!(

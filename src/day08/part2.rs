@@ -103,3 +103,7 @@ fn greatest_common_divisor(smaller_number: usize, larger_number: usize) -> usize
 
 	1
 }
+
+pub fn ttt()->u32 {
+	2
+}
