@@ -22,7 +22,7 @@ fn number_of_ways_multiplied_together(times: Vec<u32>, distances: Vec<u32>) -> u
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -50,5 +50,5 @@ pub fn main(testing: bool) {
 		.map(|s| s.parse::<u32>().unwrap())
 		.collect();
 
-	println!("{}", number_of_ways_multiplied_together(times, distances));
+	number_of_ways_multiplied_together(times, distances).to_string()
 }

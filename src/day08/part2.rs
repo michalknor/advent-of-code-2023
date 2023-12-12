@@ -3,7 +3,7 @@ use std::collections::HashMap;
 const STARTING_NODE: &str = "A";
 const DESTINATION_NODE: &str = "Z";
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -32,7 +32,7 @@ pub fn main(testing: bool) {
 		.cloned()
         .collect();
 
-	println!("{}", get_number_of_steps_to_reach_destination(&network, instructions, &starting_nodes));
+	get_number_of_steps_to_reach_destination(&network, instructions, &starting_nodes).to_string()
 }
 
 
@@ -74,7 +74,6 @@ fn process_instructions(
 			};
 
 			if current_node.ends_with(DESTINATION_NODE) {
-				// println!("{current_node}: {number_of_steps}");
 				return number_of_steps;
 			}
 		}
@@ -102,8 +101,4 @@ fn greatest_common_divisor(smaller_number: usize, larger_number: usize) -> usize
 	}
 
 	1
-}
-
-pub fn ttt()->u32 {
-	2
 }

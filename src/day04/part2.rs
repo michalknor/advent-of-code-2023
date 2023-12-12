@@ -19,7 +19,7 @@ fn evaluate_ticket(winning_numbers: Vec<u32>, your_numbers: Vec<u32>) -> u32 {
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -47,5 +47,5 @@ pub fn main(testing: bool) {
 
 	let result: u32 = tickets.values().sum();
 
-	println!("{}", result);
+    result.to_string()
 }

@@ -33,7 +33,7 @@ fn get_number_of_steps_to_reach_destination(
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -61,7 +61,5 @@ pub fn main(testing: bool) {
 		.map(|chunk| (chunk[0], vec![chunk[1], chunk[2]]))
     	.collect::<HashMap<_, _>>();
 
-	println!("{:?}, {instructions}, {starting_node}", network);
-
-	println!("{}", get_number_of_steps_to_reach_destination(network, instructions, STARTING_NODE))
+	get_number_of_steps_to_reach_destination(network, instructions, STARTING_NODE).to_string()
 }

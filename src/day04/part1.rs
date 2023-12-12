@@ -15,7 +15,7 @@ fn evaluate_ticket(winning_numbers: Vec<u32>, your_numbers: Vec<u32>) -> u32 {
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -34,7 +34,7 @@ pub fn main(testing: bool) {
 		result += evaluate_ticket(winning_numbers, your_numbers);
     }
 
-	println!("{}", result);
+    result.to_string()
 }
 
 

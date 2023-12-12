@@ -11,7 +11,7 @@ fn number_of_ways_to_win_a_race(time: u64, distance: u64) -> u64 {
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content = if testing {
 		include_str!("test.txt")
 	}
@@ -39,5 +39,5 @@ pub fn main(testing: bool) {
 		.parse()
     	.unwrap();
 
-	println!("{}", number_of_ways_to_win_a_race(times, distance));
+	number_of_ways_to_win_a_race(times, distance).to_string()
 }

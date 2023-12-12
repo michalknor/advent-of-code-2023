@@ -34,7 +34,7 @@ fn evaluate_game(modified_line: &str, game_id: u32) -> u32 {
 	game_id
 }
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -51,4 +51,6 @@ pub fn main(testing: bool) {
     }
 
 	println!("{}", result);
+
+    result.to_string()
 }

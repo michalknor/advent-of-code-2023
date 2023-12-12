@@ -82,7 +82,7 @@ fn evaluate_schematic(schematic: Vec<Vec<char>>) -> u32 {
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -92,5 +92,5 @@ pub fn main(testing: bool) {
 	
 	let schematic: Vec<Vec<char>> = file_content.lines().map(|line| line.chars().collect()).collect();
 
-	println!("{}", evaluate_schematic(schematic));
+	evaluate_schematic(schematic).to_string()
 }

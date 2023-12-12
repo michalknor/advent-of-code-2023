@@ -29,7 +29,7 @@ fn convert_location_to_seed(location: u64, recipe: &Vec<Vec<u64>>) -> u64 {
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -72,7 +72,7 @@ pub fn main(testing: bool) {
 		location += 1;
 	};
 
-	println!("{}", min_location);
+	min_location.to_string()
 }
 
 fn convert_seed_to_location(seed: u64, recipe: &Vec<Vec<u64>>) -> u64 {
@@ -90,7 +90,7 @@ fn convert_seed_to_location(seed: u64, recipe: &Vec<Vec<u64>>) -> u64 {
 }
 
 //brute force
-pub fn main2(testing: bool) {
+pub fn main2(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -141,5 +141,7 @@ pub fn main2(testing: bool) {
 		});
 	});
 
-	println!("{}", *min_location.lock().unwrap());
+	let result = (*min_location.lock().unwrap()).to_string();
+
+	result
 }

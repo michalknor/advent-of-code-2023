@@ -66,7 +66,7 @@ fn get_hand_strength(hand: &str) -> PokerHand {
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -99,8 +99,7 @@ pub fn main(testing: bool) {
 		})
 		.sum();
 
-		println!("{:?}", hands);
-	println!("{result}");
+	result.to_string()
 }
 
 //250474325

@@ -72,7 +72,7 @@ fn compare_hands(hand_1: &str, hand_2: &str) -> std::cmp::Ordering {
     }
 }
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -105,5 +105,5 @@ pub fn main(testing: bool) {
 		})
 		.sum();
 
-	println!("{result}");
+	result.to_string()
 }

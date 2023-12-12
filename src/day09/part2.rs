@@ -27,7 +27,7 @@ fn sum_extrapolated_values(histories: &Vec<Vec<i32>>) -> i32 {
 }
 
 
-pub fn main(testing: bool) {
+pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
 		include_str!("test.txt")
 	}
@@ -43,5 +43,5 @@ pub fn main(testing: bool) {
             .collect())
 		.collect();
 
-	println!("{:?}", sum_extrapolated_values(&histories));
+	sum_extrapolated_values(&histories).to_string()
 }
