@@ -48,11 +48,6 @@ pub fn main(testing: bool) -> String {
 		.next()
 		.unwrap();
 
-	let starting_node: &str = file_content
-		.split_whitespace()
-		.nth(1)
-		.unwrap();
-
 	let network: HashMap<&str, Vec<&str>> = file_content
 		.split_whitespace()
 		.skip(1)

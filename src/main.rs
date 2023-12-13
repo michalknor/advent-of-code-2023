@@ -60,8 +60,7 @@ fn main() -> std::io::Result<()> {
         for key in sorted_keys {
             let now = Instant::now();
 
-            print!("{}: ", key);
-            function_map[key](false);
+            println!("{key}: {}", function_map[key](false));
 
             println!("{}: {}", "Elapsed".green().bold(), format!("{:.2?}", now.elapsed()).underline());
         }
@@ -78,8 +77,7 @@ fn main() -> std::io::Result<()> {
     if let Some(&func) = function_map.get(&call_function) {
         let now = Instant::now();
 
-        print!("{}: ", call_function);
-        func(args.len() > 3);
+        println!("{}: {}", call_function, func(args.len() > 3));
 
         println!("{}: {}", "Elapsed".green().bold(), format!("{:.2?}", now.elapsed()).underline());
     }
@@ -89,14 +87,15 @@ fn main() -> std::io::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use crate::day08;
+    use crate::day10;
     #[test]
-    fn my_test() {
-        let result: u32 = 2;
-        // Your test assertions here
-        assert_eq!(day08::part2::ttt(), result);
+    fn day10_part1_1() {
+        assert_eq!(day10::part1::main2("src\\day10\\test1.txt"), "4");
+    }
 
-    result.to_string();
+    #[test]
+    fn day10_part1_2() {
+        assert_eq!(day10::part1::main2("src\\day10\\test2.txt"), "8");
     }
 }
 

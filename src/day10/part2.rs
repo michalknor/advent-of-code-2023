@@ -1,6 +1,6 @@
 pub fn main(testing: bool) -> String {
 	let file_content: &str = if testing {
-		include_str!("test.txt")
+		include_str!("test1.txt")
 	}
 	else {
 		include_str!("input.txt")
