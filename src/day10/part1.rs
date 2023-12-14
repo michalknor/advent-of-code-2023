@@ -35,17 +35,17 @@ fn get_farthest_number_of_steps_from_animal(tile_grid: &Vec<Vec<&str>>) -> u32 {
 
 	let mut next_positions: HashMap<Direction, [usize; 2]> = HashMap::new();
 
-	if starting_position[0] - 1 > 0 {
-		next_positions[&Direction::Up] = [starting_position[0] - 1, starting_position[1]];
+	if starting_position[0] != 0 {
+		next_positions.insert(Direction::Up, [starting_position[0] - 1, starting_position[1]]);
 	}
 	if starting_position[1] + 1 < tile_grid[0].len() {
-		next_positions[&Direction::Right] = [starting_position[0] - 1, starting_position[1]];
+		next_positions.insert(Direction::Right, [starting_position[0], starting_position[1] + 1]);
 	}
 	if starting_position[0] + 1 < tile_grid.len() {
-		next_positions[&Direction::Down] = [starting_position[0] - 1, starting_position[1]];
+		next_positions.insert(Direction::Down, [starting_position[0] + 1, starting_position[1]]);
 	}
-	if starting_position[1] - 1 > 0 {
-		next_positions[&Direction::Left] = [starting_position[0] - 1, starting_position[1]];
+	if starting_position[1] != 0 {
+		next_positions.insert(Direction::Left, [starting_position[0], starting_position[1] - 1]);
 	}
 
 	for (direction, next_position) in next_positions {

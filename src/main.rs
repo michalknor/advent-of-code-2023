@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::path::Path;
 
 mod day01;
 mod day02;
@@ -76,7 +77,17 @@ fn main() -> std::io::Result<()> {
     if let Some(&func) = function_map.get(&call_function) {
         let now = Instant::now();
 
-        println!("{}: {}", call_function, func(&(format!("src\\{}\\test3.txt", args[1]))));
+        println!("{call_function}: {}", 
+            func(
+                &(Path::new("src")
+                    .join(&args[1])
+                    .join("test1.txt")
+                    .into_os_string()
+                    .into_string()
+                    .unwrap()
+                )
+            )
+        );
 
         println!("{}: {}", "Elapsed".green().bold(), format!("{:.2?}", now.elapsed()).underline());
     }

@@ -30,17 +30,49 @@ pub fn main(filename: &str) -> String {
 }
 
 
-fn get_number_of_tiles_enclosed_by_the_loop(tile_grid: &Vec<Vec<&str>>) -> u32 {
-	println!("{:?}", replace_unused_tiles(&tile_grid, &get_positions_of_loop_pipes(&tile_grid)));
-	// println!("{:?}", get_positions_of_loop_pipes(tile_grid));
+fn get_number_of_tiles_enclosed_by_the_loop(tile_grid: &Vec<Vec<&str>>) -> usize {
+	let mut tile_grid_with_no_unused_tiles: Vec<Vec<&str>> = replace_unused_tiles(&tile_grid, get_positions_of_loop_pipes(&tile_grid));
 
-	32
+	let starting_tile = get_pipe_of_starting_tile(&tile_grid_with_no_unused_tiles);
+
+	tile_grid_with_no_unused_tiles = 
+
+	let mut is_in_loop: bool = false;
+	let n_of_tiles_in_loop: usize = 0;
+
+	// for i in 0..tile_grid_with_no_unused_tiles.len() {
+	// 	for j in 0..tile_grid_with_no_unused_tiles[i].len() {
+	// 		match tile_grid_with_no_unused_tiles[i][j] {
+	// 			"." => match current_tile {
+	// 				"|" => Direction::Up,
+	// 				"-" => Direction::None,
+	// 				"L" => Direction::None,
+	// 				"J" => Direction::None,
+	// 				"7" => Direction::Left,
+	// 				"F" => Direction::Right,
+	// 				_ => Direction::None
+	// 			},
+	// 	}
+	// }
+	println!("{:?}", tile_grid_with_no_unused_tiles);
+
+	n_of_tiles_in_loop
+}
+
+
+fn get_pipe_of_starting_tile<'a>(tile_grid: &'a Vec<Vec<&'a str>>) -> &'a str {
+	let starting_position: [usize; 2] = get_starting_position(tile_grid);
+	let next_positions: HashMap<Direction, [usize; 2]> = get_next_positions(&tile_grid, &starting_position);
+
+	println!("{:?}", next_positions);
+
+	"L"
 }
 
 
 fn replace_unused_tiles<'a>(
-	tile_grid: &'a Vec<Vec<&'a str>>, 
-	tiles_to_not_replace: &'a Vec<[usize; 2]>
+	tile_grid: &Vec<Vec<&'a str>>, 
+	tiles_to_not_replace: Vec<[usize; 2]>
 ) -> Vec<Vec<&'a str>> {
 	let mut new_tile_grid: Vec<Vec<&str>> = tile_grid.to_owned();
 
@@ -59,28 +91,7 @@ fn replace_unused_tiles<'a>(
 fn get_positions_of_loop_pipes(tile_grid: &Vec<Vec<&str>>) -> Vec<[usize; 2]> {
 	let starting_position: [usize; 2] = get_starting_position(tile_grid);
 
-	let mut next_positions: HashMap<Direction, [usize; 2]> = HashMap::new();
-
-	if starting_position[0] - 1 > 0 {
-		next_positions[&Direction::Up] = [starting_position[0] - 1, starting_position[1]];
-	}
-	if starting_position[1] + 1 < tile_grid[0].len() {
-		next_positions[&Direction::Right] = [starting_position[0] - 1, starting_position[1]];
-	}
-	if starting_position[0] + 1 < tile_grid.len() {
-		next_positions[&Direction::Down] = [starting_position[0] - 1, starting_position[1]];
-	}
-	if starting_position[1] - 1 > 0 {
-		next_positions[&Direction::Left] = [starting_position[0] - 1, starting_position[1]];
-	}
-
-
-	let next_positions: HashMap<Direction, [usize; 2]> = HashMap::from([
-		(Direction::Up, [starting_position[0] - 1, starting_position[1]]),
-		(Direction::Right, [starting_position[0], starting_position[1] + 1]),
-		(Direction::Down, [starting_position[0] + 1, starting_position[1]]),
-		(Direction::Left, [starting_position[0], starting_position[1] - 1])
-	]);
+	let mut next_positions: HashMap<Direction, [usize; 2]> = get_next_positions(&tile_grid, &starting_position);
 
 	for (direction, next_position) in next_positions {
 		let mut current_position = next_position;
@@ -116,6 +127,26 @@ fn get_positions_of_loop_pipes(tile_grid: &Vec<Vec<&str>>) -> Vec<[usize; 2]> {
 	}
 
 	vec![[0, 0]]
+}
+
+
+fn get_next_positions(tile_grid: &Vec<Vec<&str>>, starting_position: &[usize; 2]) -> HashMap<Direction, [usize; 2]> {
+	let mut next_positions: HashMap<Direction, [usize; 2]> = HashMap::new();
+
+	if starting_position[0] != 0 {
+		next_positions.insert(Direction::Up, [starting_position[0] - 1, starting_position[1]]);
+	}
+	if starting_position[1] + 1 < tile_grid[0].len() {
+		next_positions.insert(Direction::Right, [starting_position[0], starting_position[1] + 1]);
+	}
+	if starting_position[0] + 1 < tile_grid.len() {
+		next_positions.insert(Direction::Down, [starting_position[0] + 1, starting_position[1]]);
+	}
+	if starting_position[1] != 0 {
+		next_positions.insert(Direction::Left, [starting_position[0], starting_position[1] - 1]);
+	}
+
+	return next_positions
 }
 
 
