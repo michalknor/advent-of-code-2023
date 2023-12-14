@@ -1,9 +1,7 @@
 use std::fs::File;
 use std::io::Read;
-use std::env;
-use std::path::Path;
-
 use std::collections::HashMap;
+
 
 #[derive(Debug, Hash, PartialEq, Eq)]
 enum Direction {
@@ -14,27 +12,8 @@ enum Direction {
 	None
 }
 
-pub fn main(filename2: bool) -> String {
-	let filename = "src\\day10\\input.txt";
 
-    // Open the file
-    let mut file = File::open(filename).expect("Failed to open file");
-
-	let mut file_content: String = String::new();
-
-	file.read_to_string(&mut file_content).expect("Failed to read file content");
-
-	let tile_grid: Vec<Vec<&str>> = file_content
-		.lines()
-		.map(|line| line
-			.split("")
-			.collect())
-		.collect();
-
-	get_farthest_number_of_steps_from_animal(&tile_grid).to_string()
-}
-
-pub fn main2(filename: &str) -> String {
+pub fn main(filename: &str) -> String {
     let mut file = File::open(filename).expect("Failed to open file");
 	let mut file_content: String = String::new();
 
@@ -54,12 +33,20 @@ pub fn main2(filename: &str) -> String {
 fn get_farthest_number_of_steps_from_animal(tile_grid: &Vec<Vec<&str>>) -> u32 {
 	let starting_position: [usize; 2] = get_starting_position(tile_grid);
 
-	let next_positions: HashMap<Direction, [usize; 2]> = HashMap::from([
-		(Direction::Up, [starting_position[0] - 1, starting_position[1]]),
-		(Direction::Right, [starting_position[0], starting_position[1] + 1]),
-		(Direction::Down, [starting_position[0] + 1, starting_position[1]]),
-		(Direction::Left, [starting_position[0], starting_position[1] - 1])
-	]);
+	let mut next_positions: HashMap<Direction, [usize; 2]> = HashMap::new();
+
+	if starting_position[0] - 1 > 0 {
+		next_positions[&Direction::Up] = [starting_position[0] - 1, starting_position[1]];
+	}
+	if starting_position[1] + 1 < tile_grid[0].len() {
+		next_positions[&Direction::Right] = [starting_position[0] - 1, starting_position[1]];
+	}
+	if starting_position[0] + 1 < tile_grid.len() {
+		next_positions[&Direction::Down] = [starting_position[0] - 1, starting_position[1]];
+	}
+	if starting_position[1] - 1 > 0 {
+		next_positions[&Direction::Left] = [starting_position[0] - 1, starting_position[1]];
+	}
 
 	for (direction, next_position) in next_positions {
 		let mut current_position = next_position;

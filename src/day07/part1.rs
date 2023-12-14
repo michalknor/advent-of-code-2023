@@ -1,3 +1,7 @@
+use std::fs::File;
+use std::io::Read;
+
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum PokerHand {
     FiveOfAKind,
@@ -8,23 +12,6 @@ enum PokerHand {
     OnePair,
     HighCard,
 }
-
-
-// CARD_VALUES = HashMap::from([
-//     ('A', 14),
-//     ('K', 13),
-//     ('Q', 12),
-//     ('J', 11),
-//     ('T', 10),
-//     ('9', 9),
-//     ('8', 8),
-//     ('7', 7),
-//     ('6', 6),
-//     ('5', 5),
-//     ('4', 4),
-//     ('3', 3),
-//     ('2', 2),
-// ]);
 
 
 fn compare_hands(hand_1: &str, hand_2: &str) -> std::cmp::Ordering {
@@ -66,13 +53,12 @@ fn get_hand_strength(hand: &str) -> PokerHand {
 }
 
 
-pub fn main(testing: bool) -> String {
-	let file_content: &str = if testing {
-		include_str!("test.txt")
-	}
-	else {
-		include_str!("input.txt")
-	};
+pub fn main(filename: &str) -> String {
+    let mut file = File::open(filename).expect("Failed to open file");
+	let mut file_content: String = String::new();
+
+
+	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
 	let file_content = &(file_content
 		.replace('A', "E")

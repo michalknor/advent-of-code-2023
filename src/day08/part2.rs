@@ -1,15 +1,16 @@
+use std::fs::File;
+use std::io::Read;
 use std::collections::HashMap;
 
 const STARTING_NODE: &str = "A";
 const DESTINATION_NODE: &str = "Z";
 
-pub fn main(testing: bool) -> String {
-	let file_content: &str = if testing {
-		include_str!("test.txt")
-	}
-	else {
-		include_str!("input.txt")
-	};
+pub fn main(filename: &str) -> String {
+    let mut file = File::open(filename).expect("Failed to open file");
+	let mut file_content: String = String::new();
+
+
+	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
 	let file_content = &(file_content.replace(['=', '(', ',', ')'], ""));
 

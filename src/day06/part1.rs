@@ -1,3 +1,7 @@
+use std::fs::File;
+use std::io::Read;
+
+
 fn number_of_ways_to_win_a_race(time: u32, distance: u32) -> u32 {
 	let mut result = 0;
 
@@ -22,13 +26,12 @@ fn number_of_ways_multiplied_together(times: Vec<u32>, distances: Vec<u32>) -> u
 }
 
 
-pub fn main(testing: bool) -> String {
-	let file_content: &str = if testing {
-		include_str!("test.txt")
-	}
-	else {
-		include_str!("input.txt")
-	};
+pub fn main(filename: &str) -> String {
+    let mut file = File::open(filename).expect("Failed to open file");
+	let mut file_content: String = String::new();
+
+
+	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
 	let times: Vec<u32> = file_content
 		.lines()

@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::Read;
 use std::collections::HashMap;
 
 fn update_gears(gears: &mut HashMap<usize, Vec<u32>>, part_number: u32, adjacent_gears: &Vec<usize>) {
@@ -82,13 +84,12 @@ fn evaluate_schematic(schematic: Vec<Vec<char>>) -> u32 {
 }
 
 
-pub fn main(testing: bool) -> String {
-	let file_content: &str = if testing {
-		include_str!("test.txt")
-	}
-	else {
-		include_str!("input.txt")
-	};
+pub fn main(filename: &str) -> String {
+    let mut file = File::open(filename).expect("Failed to open file");
+	let mut file_content: String = String::new();
+
+
+	file.read_to_string(&mut file_content).expect("Failed to read file content");
 	
 	let schematic: Vec<Vec<char>> = file_content.lines().map(|line| line.chars().collect()).collect();
 

@@ -19,7 +19,7 @@ use colored::Colorize;
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
 
-    let mut function_map: HashMap<&str, fn(bool) -> String> = HashMap::new();
+    let mut function_map: HashMap<&str, fn(&str) -> String> = HashMap::new();
     
     function_map.insert("day01 part1", day01::part1::main);
     function_map.insert("day01 part2", day01::part2::main);
@@ -35,7 +35,6 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day05 part1", day05::part1::main);
     function_map.insert("day05 part2", day05::part2::main);
-    function_map.insert("day05 part2-brute-force", day05::part2::main2);
 
     function_map.insert("day06 part1", day06::part1::main);
     function_map.insert("day06 part2", day06::part2::main);
@@ -60,7 +59,7 @@ fn main() -> std::io::Result<()> {
         for key in sorted_keys {
             let now = Instant::now();
 
-            println!("{key}: {}", function_map[key](false));
+            println!("{key}: {}", function_map[key](&(format!("src\\{}\\input.txt", key.split(" ").next().unwrap()))));
 
             println!("{}: {}", "Elapsed".green().bold(), format!("{:.2?}", now.elapsed()).underline());
         }
@@ -77,7 +76,7 @@ fn main() -> std::io::Result<()> {
     if let Some(&func) = function_map.get(&call_function) {
         let now = Instant::now();
 
-        println!("{}: {}", call_function, func(args.len() > 3));
+        println!("{}: {}", call_function, func(&(format!("src\\{}\\test3.txt", args[1]))));
 
         println!("{}: {}", "Elapsed".green().bold(), format!("{:.2?}", now.elapsed()).underline());
     }
@@ -90,12 +89,12 @@ mod tests {
     use crate::day10;
     #[test]
     fn day10_part1_1() {
-        assert_eq!(day10::part1::main2("src\\day10\\test1.txt"), "4");
+        assert_eq!(day10::part1::main("src\\day10\\test1.txt"), "4");
     }
 
     #[test]
     fn day10_part1_2() {
-        assert_eq!(day10::part1::main2("src\\day10\\test2.txt"), "8");
+        assert_eq!(day10::part1::main("src\\day10\\test2.txt"), "8");
     }
 }
 

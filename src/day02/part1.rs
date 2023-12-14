@@ -1,3 +1,7 @@
+use std::fs::File;
+use std::io::Read;
+
+
 const MAX_RED: u32 = 12;
 const MAX_GREEN: u32 = 13;
 const MAX_BLUE: u32 = 14;
@@ -34,13 +38,12 @@ fn evaluate_game(modified_line: &str, game_id: u32) -> u32 {
 	game_id
 }
 
-pub fn main(testing: bool) -> String {
-	let file_content: &str = if testing {
-		include_str!("test.txt")
-	}
-	else {
-		include_str!("input.txt")
-	};
+pub fn main(filename: &str) -> String {
+    let mut file = File::open(filename).expect("Failed to open file");
+	let mut file_content: String = String::new();
+
+
+	file.read_to_string(&mut file_content).expect("Failed to read file content");
 	let mut result = 0;
 	let mut id: u32 = 1;
 	for line in file_content.lines() {
