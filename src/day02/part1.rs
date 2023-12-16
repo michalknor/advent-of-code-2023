@@ -53,7 +53,5 @@ pub fn main(filename: &str) -> String {
 		id += 1;
     }
 
-	println!("{}", result);
-
     result.to_string()
 }

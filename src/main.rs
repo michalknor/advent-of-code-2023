@@ -60,7 +60,20 @@ fn main() -> std::io::Result<()> {
         for key in sorted_keys {
             let now = Instant::now();
 
-            println!("{key}: {}", function_map[key](&(format!("src\\{}\\input.txt", key.split(" ").next().unwrap()))));
+            println!("{key}: {}", 
+                function_map[key](
+                    &(
+                        Path::new("src")
+                            .join(
+                                key.split(" ").next().unwrap()
+                            )
+                            .join("input.txt")
+                            .into_os_string()
+                            .into_string()
+                            .unwrap()
+                    )
+                )
+            );
 
             println!("{}: {}", "Elapsed".green().bold(), format!("{:.2?}", now.elapsed()).underline());
         }
@@ -81,7 +94,7 @@ fn main() -> std::io::Result<()> {
             func(
                 &(Path::new("src")
                     .join(&args[1])
-                    .join("test1.txt")
+                    .join("input.txt")
                     .into_os_string()
                     .into_string()
                     .unwrap()

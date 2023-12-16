@@ -29,7 +29,5 @@ pub fn main(filename: &str) -> String {
 		result += first_digit*10 + last_digit;
     }
 
-	println!("{}", result);
-
     result.to_string()
 }
