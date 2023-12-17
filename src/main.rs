@@ -11,6 +11,7 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
 
 use std::time::Instant;
 use std::env;
@@ -51,6 +52,9 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day10 part1", day10::part1::main);
     function_map.insert("day10 part2", day10::part2::main);
+
+    function_map.insert("day11 part1", day11::part1::main);
+    function_map.insert("day11 part2", day11::part2::main);
 
 
     if args.len() == 1 {
@@ -94,7 +98,7 @@ fn main() -> std::io::Result<()> {
             func(
                 &(Path::new("src")
                     .join(&args[1])
-                    .join("input.txt")
+                    .join(if args.len() < 4 {"input.txt"} else {&args[3]})
                     .into_os_string()
                     .into_string()
                     .unwrap()
@@ -119,6 +123,31 @@ mod tests {
     #[test]
     fn day10_part1_2() {
         assert_eq!(day10::part1::main("src\\day10\\test2.txt"), "8");
+    }
+
+    #[test]
+    fn day10_part2_1() {
+        assert_eq!(day10::part2::main("src\\day10\\test1.txt"), "1");
+    }
+
+    #[test]
+    fn day10_part2_2() {
+        assert_eq!(day10::part2::main("src\\day10\\test2.txt"), "1");
+    }
+
+    #[test]
+    fn day10_part2_3() {
+        assert_eq!(day10::part2::main("src\\day10\\test3.txt"), "4");
+    }
+
+    #[test]
+    fn day10_part2_4() {
+        assert_eq!(day10::part2::main("src\\day10\\test4.txt"), "8");
+    }
+
+    #[test]
+    fn day10_part2_5() {
+        assert_eq!(day10::part2::main("src\\day10\\test5.txt"), "10");
     }
 }
 
