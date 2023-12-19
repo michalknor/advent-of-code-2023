@@ -114,7 +114,10 @@ fn main() -> std::io::Result<()> {
 
 #[cfg(test)]
 mod tests {
+    
     use crate::day10;
+    use crate::day11;
+
     #[test]
     fn day10_part1_1() {
         assert_eq!(day10::part1::main("src\\day10\\test1.txt"), "4");
@@ -148,6 +151,11 @@ mod tests {
     #[test]
     fn day10_part2_5() {
         assert_eq!(day10::part2::main("src\\day10\\test5.txt"), "10");
+    }
+
+    #[test]
+    fn day11_part1_1() {
+        assert_eq!(day11::part1::main("src\\day11\\test1.txt"), "374");
     }
 }
 

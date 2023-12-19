@@ -1,16 +1,6 @@
 use std::fs::File;
 use std::io::Read;
-use std::collections::HashMap;
-
-
-#[derive(Debug, Hash, PartialEq, Eq)]
-enum Direction {
-    Up,
-    Right,
-	Down,
-    Left,
-	None
-}
+use std::collections::HashSet;
 
 
 pub fn main(filename: &str) -> String {
@@ -19,263 +9,104 @@ pub fn main(filename: &str) -> String {
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
-	let tile_grid: Vec<Vec<char>> = file_content
+	let data: Vec<Vec<char>> = file_content
 		.lines()
 		.map(|line| line
 			.chars()
 			.collect())
 		.collect();
 
-	get_number_of_tiles_enclosed_by_the_loop(&tile_grid).to_string()
+	sum_of_shortest_path_between_all_pairs(&data).to_string()
 }
 
 
-fn get_number_of_tiles_enclosed_by_the_loop(tile_grid: &Vec<Vec<char>>) -> usize {
-	let mut tile_grid_with_no_unused_tiles: Vec<Vec<char>> = replace_unused_tiles(&tile_grid, get_positions_of_loop_pipes(&tile_grid));
+fn sum_of_shortest_path_between_all_pairs(
+	data: &Vec<Vec<char>>,
+	
+) -> usize {
+	let position_of_empty_galaxies_x: HashSet<usize> = get_position_of_empty_galaxies_x(&data);
+	let position_of_empty_galaxies_y: HashSet<usize> = get_position_of_empty_galaxies_y(&data);
+	let position_of_galaxies: Vec<[usize; 2]> = get_position_of_galaxies(&data);
+	let mut sum_of_shortest_path_between_all_pairs: usize = 0;
 
-	replace_starting_tile(&mut tile_grid_with_no_unused_tiles);
-
-	let mut n_of_tiles_in_loop: usize = 0;
-
-	for i in 0..tile_grid_with_no_unused_tiles.len() {
-		let mut is_in_loop: bool = false;
-		let mut previous_corner_tile: char = '.';
-		for j in 0..tile_grid_with_no_unused_tiles[i].len() {
-			match tile_grid_with_no_unused_tiles[i][j] {
-				'|' => {
-					is_in_loop = !is_in_loop;
-					continue;
-				}
-				'-' => continue,
-				_ => {}
-			}
-
-			match previous_corner_tile {
-				'F' => {
-					match tile_grid_with_no_unused_tiles[i][j] {
-						'J' => {is_in_loop = !is_in_loop;}
-						'7' => {},
-						_ => continue
-					}
-				},
-				'L' => {
-					match tile_grid_with_no_unused_tiles[i][j] {
-						'7' => {is_in_loop = !is_in_loop;}
-						'J' => {},
-						_ => continue
-					}
-				}
-				_ => {}
-			}
-
-			previous_corner_tile = match tile_grid_with_no_unused_tiles[i][j] {
-				'F' => 'F',
-				'L' => 'L',
-				_ => '.'
-			};
-
-			if tile_grid_with_no_unused_tiles[i][j] == '.' && is_in_loop {
-				n_of_tiles_in_loop += 1;
-			}
+	for i in 0..position_of_galaxies.len() {
+		for j in i+1..position_of_galaxies.len() {
+			sum_of_shortest_path_between_all_pairs += 
+				position_of_galaxies[i][0].abs_diff(position_of_galaxies[j][0])
+				+
+				position_of_galaxies[i][1].abs_diff(position_of_galaxies[j][1]);
 		}
 	}
 
-	n_of_tiles_in_loop
+	sum_of_shortest_path_between_all_pairs
 }
 
 
-fn get_pipe_of_starting_tile(tile_grid: &Vec<Vec<char>>) -> char {
-	let starting_position: [usize; 2] = get_starting_position(tile_grid);
-	let next_positions = get_next_positions(&tile_grid, &starting_position);
+fn get_position_of_empty_galaxies_x(
+	data: &Vec<Vec<char>>
+) -> HashSet<usize> {
+	let mut position_of_empty_galaxies_x: HashSet<usize> = HashSet::new();
 
-	match next_positions
-		.keys()
-		.collect::<Vec<&Direction>>()
-		.as_slice() {
-		i if i.contains(&&Direction::Up) => {
-			if i.contains(&&Direction::Right) {return 'L'}
-			if i.contains(&&Direction::Down) {return '|'}
-			return 'J'
-		}
-		i if i.contains(&&Direction::Right) => {
-			if i.contains(&&Direction::Down) {return 'F'}
-			return '-'
-		}
-		_ => {
-			return '7'
-		}
-	}
-}
+	for i in 0..data.len() {
+		let mut insert = true;
 
-
-fn replace_starting_tile(tile_grid: &mut Vec<Vec<char>>) -> &mut Vec<Vec<char>> {
-	let starting_position: [usize; 2] = get_starting_position(tile_grid);
-	let starting_tile = get_pipe_of_starting_tile(&tile_grid);
-
-	tile_grid[starting_position[0]][starting_position[1]] = starting_tile;
-
-	tile_grid
-}
-
-
-fn replace_unused_tiles(
-	tile_grid: &Vec<Vec<char>>, 
-	tiles_to_not_replace: Vec<[usize; 2]>
-) -> Vec<Vec<char>> {
-	let mut new_tile_grid: Vec<Vec<char>> = tile_grid.to_owned();
-
-	for i in 0..tile_grid.len() {
-		for j in 0..tile_grid[i].len() {
-			if !tiles_to_not_replace.contains(&[i, j]) {
-				new_tile_grid[i][j] = '.';
-			}
-		}
-	}
-
-	new_tile_grid
-}
-
-
-fn get_positions_of_loop_pipes(tile_grid: &Vec<Vec<char>>) -> Vec<[usize; 2]> {
-	let starting_position: [usize; 2] = get_starting_position(tile_grid);
-
-	for (direction, next_position) in get_next_positions(&tile_grid, &starting_position) {
-		let mut current_position = next_position;
-		let mut previous_to_current_direction = direction;
-		let mut loop_pipes: Vec<[usize; 2]> = Vec::from([next_position]);
-
-		loop {
-			loop_pipes.push(current_position);
-
-			let current_tile: char = tile_grid[current_position[0]][current_position[1]];
-
-			match current_tile {
-				'.' => {
-					break;
-				}
-				'S' => {
-					return loop_pipes;
-				}
-				_ => {
-				}
-			}
-
-			previous_to_current_direction = get_next_direction(current_tile, &previous_to_current_direction);
-
-			if previous_to_current_direction == Direction::None {
+		for j in 0..data[0].len() {
+			if data[i][j] == '#' {
+				insert = false;
 				break;
 			}
-
-			current_position = get_next_position(current_position, &previous_to_current_direction);
 		}
+
+		if !insert {
+			continue;
+		}
+
+		position_of_empty_galaxies_x.insert(i);
 	}
 
-	vec![[0, 0]]
+	position_of_empty_galaxies_x
 }
 
 
-fn get_next_positions(tile_grid: &Vec<Vec<char>>, starting_position: &[usize; 2]) -> HashMap<Direction, [usize; 2]> {
-	let mut next_positions: HashMap<Direction, [usize; 2]> = HashMap::new();
+fn get_position_of_empty_galaxies_y(
+	data: &Vec<Vec<char>>
+) -> HashSet<usize> {
+	let mut position_of_empty_galaxies_y: HashSet<usize> = HashSet::new();
 
-	if starting_position[0] != 0 {
-		let direction = Direction::Up;
-		let y = starting_position[0] - 1;
-		let x = starting_position[1];
-		if get_next_direction( tile_grid[y][x], &direction) != Direction::None {
-			next_positions.insert(direction, [y, x]);
+	
+	for j in 0..data[0].len() {
+		let mut insert = true;
+
+		for i in 0..data.len() {
+			if data[i][j] == '#' {
+				insert = false;
+				break;
+			}
 		}
-	}
-	if starting_position[1] + 1 < tile_grid[0].len() {
-		let direction = Direction::Right;
-		let y = starting_position[0];
-		let x = starting_position[1] + 1;
-		if get_next_direction( tile_grid[y][x], &direction) != Direction::None {
-			next_positions.insert(direction, [y, x]);
+
+		if !insert {
+			continue;
 		}
-	}
-	if starting_position[0] + 1 < tile_grid.len() {
-		let direction = Direction::Down;
-		let y = starting_position[0] + 1;
-		let x = starting_position[1];
-		if get_next_direction( tile_grid[y][x], &direction) != Direction::None {
-			next_positions.insert(direction, [y, x]);
-		}
-	}
-	if starting_position[1] != 0 {
-		let direction = Direction::Left;
-		let y = starting_position[0];
-		let x = starting_position[1] - 1;
-		if get_next_direction( tile_grid[y][x], &direction) != Direction::None {
-			next_positions.insert(direction, [y, x]);
-		}
+
+		position_of_empty_galaxies_y.insert(j);
 	}
 
-	return next_positions
+	position_of_empty_galaxies_y
 }
 
 
-fn get_starting_position(tile_grid: &Vec<Vec<char>>) -> [usize; 2] {
-	for (i, tile_row) in tile_grid.iter().enumerate() {
-		for (j, tile) in tile_row.iter().enumerate() {
-			if *tile == 'S' {
-				return [i, j]
+fn get_position_of_galaxies(
+	data: &Vec<Vec<char>>
+) -> Vec<[usize; 2]> {
+	let mut position_of_galaxies: Vec<[usize; 2]> = Vec::new();
+
+	for i in 0..data.len() {
+		for j in 0..data[0].len() {
+			if data[i][j] == '#' {
+				position_of_galaxies.push([i, j]);
 			}
 		}
 	}
-	
-	[0, 0]
-}
 
-
-fn get_next_direction(current_tile: char, previous_to_current_direction: &Direction) -> Direction {
-	match previous_to_current_direction {
-		Direction::Up => match current_tile {
-			'|' => Direction::Up,
-			'-' => Direction::None,
-			'L' => Direction::None,
-			'J' => Direction::None,
-			'7' => Direction::Left,
-			'F' => Direction::Right,
-			_ => Direction::None
-		},
-		Direction::Right => match current_tile {
-			'|' => Direction::None,
-			'-' => Direction::Right,
-			'L' => Direction::None,
-			'J' => Direction::Up,
-			'7' => Direction::Down,
-			'F' => Direction::None,
-			_ => Direction::None
-		},
-		Direction::Down => match current_tile {
-			'|' => Direction::Down,
-			'-' => Direction::None,
-			'L' => Direction::Right,
-			'J' => Direction::Left,
-			'7' => Direction::None,
-			'F' => Direction::None,
-			_ => Direction::None
-		},
-		Direction::Left => match current_tile {
-			'|' => Direction::None,
-			'-' => Direction::Left,
-			'L' => Direction::Up,
-			'J' => Direction::None,
-			'7' => Direction::None,
-			'F' => Direction::Down,
-			_ => Direction::None
-		},
-		_ => Direction::None
-	}
-}
-
-
-fn get_next_position(current_position: [usize; 2], next_pipe_direction: &Direction) -> [usize; 2] {
-	match next_pipe_direction {
-		Direction::Up => [current_position[0] - 1, current_position[1]],
-		Direction::Right => [current_position[0], current_position[1] + 1],
-		Direction::Down => [current_position[0] + 1, current_position[1]],
-		Direction::Left => [current_position[0], current_position[1] - 1],
-		_ => [0, 0]
-	}
+	position_of_galaxies
 }
