@@ -10,17 +10,6 @@ const GALAXY_EXPANSION: usize = 1_000_000;
 
 
 pub fn main(filename: &str) -> String {
-	let mut i = 0;
-	loop {
-		i += 1;
-		print!("\r");
-		if i % 3 == 0 {
-			print!("{}", "Elapsed".red().bold());
-		}
-		else {
-			print!("{}", "Elapsed".green().bold());
-		}
-	}
     let mut file = File::open(filename).expect("Failed to open file");
 	let mut file_content: String = String::new();
 
@@ -136,23 +125,18 @@ fn get_length_between_pair(
 	position_of_empty_galaxies_x: &HashSet<usize>, 
 	position_of_empty_galaxies_y: &HashSet<usize>
 ) -> usize {
-	let mut result: usize = 0;
-
-	result = galaxy1[0].abs_diff(galaxy2[0]) + galaxy1[1].abs_diff(galaxy2[1]);
-
-	result += get_number_of_empty_galaxies_between_pair(
-		cmp::min(galaxy1[0], galaxy2[0]), 
-		cmp::max(galaxy1[0], galaxy2[0]), 
-		position_of_empty_galaxies_x
-	);
-
-	result += get_number_of_empty_galaxies_between_pair(
-		cmp::min(galaxy1[1], galaxy2[1]), 
-		cmp::max(galaxy1[1], galaxy2[1]), 
-		position_of_empty_galaxies_y
-	);
-
-	result
+	
+	galaxy1[0].abs_diff(galaxy2[0]) + galaxy1[1].abs_diff(galaxy2[1]) +
+		get_number_of_empty_galaxies_between_pair(
+			cmp::min(galaxy1[0], galaxy2[0]), 
+			cmp::max(galaxy1[0], galaxy2[0]), 
+			position_of_empty_galaxies_x
+		) +
+		get_number_of_empty_galaxies_between_pair(
+			cmp::min(galaxy1[1], galaxy2[1]), 
+			cmp::max(galaxy1[1], galaxy2[1]), 
+			position_of_empty_galaxies_y
+		)
 }
 
 
