@@ -12,6 +12,7 @@ mod day08;
 mod day09;
 mod day10;
 mod day11;
+mod day12;
 
 use std::time::Instant;
 use std::env;
@@ -55,6 +56,9 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day11 part1", day11::part1::main);
     function_map.insert("day11 part2", day11::part2::main);
+
+    function_map.insert("day12 part1", day12::part1::main);
+    function_map.insert("day12 part2", day12::part2::main);
 
 
     if args.len() == 1 {
@@ -156,6 +160,11 @@ mod tests {
     #[test]
     fn day11_part1_1() {
         assert_eq!(day11::part1::main("src\\day11\\test1.txt"), "374");
+    }
+
+    #[test]
+    fn day12_part1_1() {
+        assert_eq!(day11::part1::main("src\\day12\\test1.txt"), "21");
     }
 }
 
