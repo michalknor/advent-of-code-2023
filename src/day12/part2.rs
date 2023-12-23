@@ -1,6 +1,7 @@
 use std::{thread, time};
 use std::fs::File;
 use std::io::Read;
+use std::cmp;
 
 
 pub fn main(filename: &str) -> String {
@@ -32,46 +33,52 @@ fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
     let mut number_of_arrangements: usize = 0;
 
     for spring in springs {
-        let legend: Vec<usize> = spring
-			.1
-			.iter()
-			.cloned()
-			.cycle()
-			.take(5 * spring.1.len())
-			.collect();
-        let total: usize = legend.iter().sum();
-        let mut queue: Vec<(String, usize, usize)> = vec![
-			(
-				vec![spring.0.to_string(); 5].join("?"), 
-				spring.0.chars().filter(|&c| c == '#').count() * 5, 
-				spring.0.chars().filter(|&c| c == '?').count() * 5 + 4
-			)
-		];
-		println!("{:?}", legend);
-		println!("{:?}", queue);
-		println!("{:?}", total);
-		println!("{number_of_arrangements}");
-        while !queue.is_empty() {
-            let item: (String, usize, usize) = queue.pop().unwrap();
-            let item_spring: String = item.0;
-			// println!("{:?}", item_spring);
-			// println!("{:?}", queue.len());
-			// thread::sleep(time::Duration::from_millis(100));
-            let item_fill_count: usize = item.1;
-            let item_unknown_count: usize = item.2;
-            if total > item_unknown_count + item_fill_count {
-                continue;
-            }
-            if total == item_fill_count {
-                if arrangement_is_valid(&item_spring, &legend) {
-                    number_of_arrangements += 1;
-					println!("{number_of_arrangements}");
+        let mut number_of_arrangements_parts: [usize; 2] = [0, 0];
+        println!("{:?}", spring);
+        for i in 0..2 {
+            let legend: Vec<usize> = spring
+                .1
+                .iter()
+                .cloned()
+                .cycle()
+                .take((i+1) * spring.1.len())
+                .collect();
+
+            let total: usize = legend.iter().sum();
+            // println!("{:?}", legend);
+            // println!("{number_of_arrangements}");
+            let mut queue: Vec<(String, usize, usize)> = vec![
+                (
+                    vec![spring.0.to_string(); i+1].join("?"), 
+                    spring.0.chars().filter(|&c| c == '#').count() * (i+1), 
+                    spring.0.chars().filter(|&c| c == '?').count() * (i+1) + i
+                )
+            ];
+            // println!("{:?}", queue);
+            while !queue.is_empty() {
+                let item: (String, usize, usize) = queue.pop().unwrap();
+                let item_spring: String = item.0;
+                let item_fill_count: usize = item.1;
+                let item_unknown_count: usize = item.2;
+                // println!("{:?}, {}, {}", item_spring, item_fill_count, item_unknown_count);
+                // println!("{:?}", queue.len());
+                // thread::sleep(time::Duration::from_millis(100));
+                if total > item_unknown_count + item_fill_count {
+                    continue;
                 }
-                continue
+                if total == item_fill_count {
+                    if arrangement_is_valid(&item_spring, &legend) {
+                        number_of_arrangements_parts[i] += 1;
+                        // println!("{number_of_arrangements}");
+                    }
+                    continue
+                }
+                queue.push((item_spring.replacen("?", ".", 1), item_fill_count, item_unknown_count - 1));
+                queue.push((item_spring.replacen("?", "#", 1), item_fill_count + 1, item_unknown_count - 1));
             }
-            queue.push((item_spring.replacen("?", ".", 1), item_fill_count, item_unknown_count - 1));
-            queue.push((item_spring.replacen("?", "#", 1), item_fill_count + 1, item_unknown_count - 1));
+            // println!("asdasdasd{}", number_of_arrangements_parts[i]);
         }
+        number_of_arrangements += cmp::max(number_of_arrangements_parts[0] * (number_of_arrangements_parts[1] / number_of_arrangements_parts[0]).pow(4), number_of_arrangements_parts[0]);
     }
 
     number_of_arrangements

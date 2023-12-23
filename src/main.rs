@@ -118,54 +118,120 @@ fn main() -> std::io::Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
     
     use crate::day10;
     use crate::day11;
     use crate::day12;
 
     #[test]
-    fn day10_part1_1() {
-        assert_eq!(day10::part1::main("src\\day10\\test1.txt"), "4");
+    fn day10_part1() {
+        assert_eq!(day10::part1::main(
+            &Path::new("src")
+                .join("day10")
+                .join("test1.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "4"
+        );
+        assert_eq!(day10::part1::main(
+            &Path::new("src")
+                .join("day10")
+                .join("test2.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "8"
+        );
     }
 
     #[test]
-    fn day10_part1_2() {
-        assert_eq!(day10::part1::main("src\\day10\\test2.txt"), "8");
+    fn day10_part2() {
+        assert_eq!(day10::part2::main(
+            &Path::new("src")
+                .join("day10")
+                .join("test1.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "1"
+        );
+        assert_eq!(day10::part2::main(
+            &Path::new("src")
+                .join("day10")
+                .join("test2.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "1"
+        );
+        assert_eq!(day10::part2::main(
+            &Path::new("src")
+                .join("day10")
+                .join("test3.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "4"
+        );
+        assert_eq!(day10::part2::main(
+            &Path::new("src")
+                .join("day10")
+                .join("test4.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "8"
+        );
+        assert_eq!(day10::part2::main(
+            &Path::new("src")
+                .join("day10")
+                .join("test5.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "10"
+        );
     }
 
     #[test]
-    fn day10_part2_1() {
-        assert_eq!(day10::part2::main("src\\day10\\test1.txt"), "1");
+    fn day11_part1() {
+        assert_eq!(day11::part1::main(
+            &Path::new("src")
+                .join("day11")
+                .join("test1.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "374"
+        );
     }
 
     #[test]
-    fn day10_part2_2() {
-        assert_eq!(day10::part2::main("src\\day10\\test2.txt"), "1");
+    fn day12_part1() {
+        assert_eq!(day12::part1::main(
+            &Path::new("src")
+                .join("day12")
+                .join("test1.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "21"
+        );
     }
 
     #[test]
-    fn day10_part2_3() {
-        assert_eq!(day10::part2::main("src\\day10\\test3.txt"), "4");
-    }
-
-    #[test]
-    fn day10_part2_4() {
-        assert_eq!(day10::part2::main("src\\day10\\test4.txt"), "8");
-    }
-
-    #[test]
-    fn day10_part2_5() {
-        assert_eq!(day10::part2::main("src\\day10\\test5.txt"), "10");
-    }
-
-    #[test]
-    fn day11_part1_1() {
-        assert_eq!(day11::part1::main("src\\day11\\test1.txt"), "374");
-    }
-
-    #[test]
-    fn day12_part1_1() {
-        assert_eq!(day12::part1::main("src\\day12\\test1.txt"), "21");
+    fn day12_part2() {
+        assert_eq!(day12::part2::main(
+            &Path::new("src")
+                .join("day12")
+                .join("test1.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "525152"
+        );
     }
 }
 
