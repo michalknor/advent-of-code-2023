@@ -121,6 +121,7 @@ mod tests {
     
     use crate::day10;
     use crate::day11;
+    use crate::day12;
 
     #[test]
     fn day10_part1_1() {
@@ -164,7 +165,7 @@ mod tests {
 
     #[test]
     fn day12_part1_1() {
-        assert_eq!(day11::part1::main("src\\day12\\test1.txt"), "21");
+        assert_eq!(day12::part1::main("src\\day12\\test1.txt"), "21");
     }
 }
 

@@ -1,16 +1,5 @@
 use std::fs::File;
 use std::io::Read;
-use std::collections::HashMap;
-
-
-#[derive(Debug, Hash, PartialEq, Eq)]
-enum Direction {
-    Up,
-    Right,
-	Down,
-    Left,
-	None
-}
 
 
 pub fn main(filename: &str) -> String {
@@ -19,134 +8,73 @@ pub fn main(filename: &str) -> String {
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
-	let tile_grid: Vec<Vec<&str>> = file_content
-		.lines()
-		.map(|line| line
-			.split("")
-			.collect())
-		.collect();
+    let springs: Vec<(&str, Vec<usize>)> = file_content
+        .lines()
+        .map(|s| {
+            let mut parts = s.split_whitespace();
+            let str_part = parts.next().unwrap();
+            let vec_part: Vec<usize> = parts
+                .next()
+                .unwrap()
+                .split(',')
+                .map(|num| num.parse().unwrap())
+                .collect();
+            (str_part, vec_part)
+        })
+        .collect();
 
-	get_farthest_number_of_steps_from_animal(&tile_grid).to_string()
+    get_number_of_arrangements(&springs).to_string()
 }
 
 
-fn get_farthest_number_of_steps_from_animal(tile_grid: &Vec<Vec<&str>>) -> u32 {
-	let starting_position: [usize; 2] = get_starting_position(tile_grid);
+fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
+    let mut number_of_arrangements: usize = 0;
 
-	let mut next_positions: HashMap<Direction, [usize; 2]> = HashMap::new();
+    for spring in springs {
+        let legend: &Vec<usize> = &spring.1;
+        let total: usize = legend.iter().sum();
+        let mut queue: Vec<String> = vec![spring.0.to_string()];
+        while !queue.is_empty() {
+            let item: String = queue.pop().unwrap();
+            let fill_count: usize = item.chars().filter(|&c| c == '#').count();
+            let unknown_count: usize = item.chars().filter(|&c| c == '?').count();
+            if total > unknown_count + fill_count {
+                continue;
+            }
+            if item.find('?') == None || total == fill_count {
+                if arrangement_is_valid(&item, &legend) {
+                    number_of_arrangements += 1;
+                }
+                continue
+            }
+            queue.push(item.replacen("?", ".", 1));
+            queue.push(item.replacen("?", "#", 1));
+        }
+    }
 
-	if starting_position[0] != 0 {
-		next_positions.insert(Direction::Up, [starting_position[0] - 1, starting_position[1]]);
-	}
-	if starting_position[1] + 1 < tile_grid[0].len() {
-		next_positions.insert(Direction::Right, [starting_position[0], starting_position[1] + 1]);
-	}
-	if starting_position[0] + 1 < tile_grid.len() {
-		next_positions.insert(Direction::Down, [starting_position[0] + 1, starting_position[1]]);
-	}
-	if starting_position[1] != 0 {
-		next_positions.insert(Direction::Left, [starting_position[0], starting_position[1] - 1]);
-	}
-
-	for (direction, next_position) in next_positions {
-		let mut current_position = next_position;
-
-		let mut previous_to_current_direction = direction;
-
-		let mut steps = 1;
-
-		loop {
-			let current_tile: &str = tile_grid[current_position[0]][current_position[1]];
-
-			match current_tile {
-				"." => {
-					break;
-				}
-				"S" => {
-					return steps / 2;
-				}
-				_ => {
-				}
-			}
-
-			previous_to_current_direction = get_next_direction(current_tile, &previous_to_current_direction);
-
-			if previous_to_current_direction == Direction::None {
-				break;
-			}
-
-			current_position = get_next_position(current_position, &previous_to_current_direction);
-			
-			steps += 1;
-		}
-	}
-
-	0
+    number_of_arrangements
 }
 
 
-fn get_starting_position(tile_grid: &Vec<Vec<&str>>) -> [usize; 2] {
-	for (i, tile_row) in tile_grid.iter().enumerate() {
-		for (j, tile) in tile_row.iter().enumerate() {
-			if *tile == "S" {
-				return [i, j]
-			}
-		}
-	}
-	
-	return [0, 0]
-}
+fn arrangement_is_valid(item: &String, legend: &Vec<usize>) -> bool {
+    let mut result: Vec<usize> = Vec::new();
+    let mut count: usize = 0;
 
+    for c in item.chars() {
+        match c {
+            '#' => count += 1,
+            _ => {
+                if count > 0 {
+                    result.push(count);
+                    count = 0;
+                }
+            }
+        }
+    }
 
-fn get_next_direction(current_tile: &str, previous_to_current_direction: &Direction) -> Direction {
-	match previous_to_current_direction {
-		Direction::Up => match current_tile {
-			"|" => Direction::Up,
-			"-" => Direction::None,
-			"L" => Direction::None,
-			"J" => Direction::None,
-			"7" => Direction::Left,
-			"F" => Direction::Right,
-			_ => Direction::None
-		},
-		Direction::Right => match current_tile {
-			"|" => Direction::None,
-			"-" => Direction::Right,
-			"L" => Direction::None,
-			"J" => Direction::Up,
-			"7" => Direction::Down,
-			"F" => Direction::None,
-			_ => Direction::None
-		},
-		Direction::Down => match current_tile {
-			"|" => Direction::Down,
-			"-" => Direction::None,
-			"L" => Direction::Right,
-			"J" => Direction::Left,
-			"7" => Direction::None,
-			"F" => Direction::None,
-			_ => Direction::None
-		},
-		Direction::Left => match current_tile {
-			"|" => Direction::None,
-			"-" => Direction::Left,
-			"L" => Direction::Up,
-			"J" => Direction::None,
-			"7" => Direction::None,
-			"F" => Direction::Down,
-			_ => Direction::None
-		},
-		_ => Direction::None
-	}
-}
+    if count > 0 {
+        result.push(count);
+    }
 
-
-fn get_next_position(current_position: [usize; 2], next_pipe_direction: &Direction) -> [usize; 2] {
-	match next_pipe_direction {
-		Direction::Up => [current_position[0] - 1, current_position[1]],
-		Direction::Right => [current_position[0], current_position[1] + 1],
-		Direction::Down => [current_position[0] + 1, current_position[1]],
-		Direction::Left => [current_position[0], current_position[1] - 1],
-		_ => return [0, 0]
-	}
+    &result == legend
 }
