@@ -33,13 +33,13 @@ fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
     for spring in springs {
         let legend: &Vec<usize> = &spring.1;
         let total: usize = legend.iter().sum();
-        let mut queue: Vec<String> = vec![spring.0.to_string()];
+        let mut queue: Vec<String> = vec![simplify_spring(&spring.0.to_string(), legend)];
         while !queue.is_empty() {
             let item: String = queue.pop().unwrap();
             let fill_count: usize = item.chars().filter(|&c| c == '#').count();
             let unknown_count: usize = item.chars().filter(|&c| c == '?').count();
             if total > unknown_count + fill_count {
-                continue;
+                continue
             }
             if item.find('?') == None || total == fill_count {
                 if arrangement_is_valid(&item, &legend) {
@@ -53,6 +53,32 @@ fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
     }
 
     number_of_arrangements
+}
+
+
+fn simplify_spring(spring: &String, legend: &Vec<usize>) -> String {
+    let mut simplified_spring = spring.clone();
+    let total_legend: usize = legend.iter().sum::<usize>() + legend.len() - 1;
+    let mut start: usize = spring.len() - total_legend;
+    let mut end: usize = spring
+        .char_indices()
+        .find(|(_, c)| *c != '.')
+        .unwrap().0;
+    let index_of_first_fill: usize = simplified_spring.find("#").unwrap_or(spring.len());
+    if index_of_first_fill < start && start < end + legend[0] {
+        simplified_spring.replace_range(index_of_first_fill..start, &"#".repeat(start - index_of_first_fill));
+    }
+
+    for i in 0..legend.len() {
+        end += legend[i];
+        if start < end {
+            simplified_spring.replace_range(start..end, &"#".repeat(end - start));
+        }
+        end += 1;
+        start += legend[i] + 1;
+    }
+    println!("{simplified_spring}");
+    simplified_spring
 }
 
 

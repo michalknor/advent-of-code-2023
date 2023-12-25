@@ -3,8 +3,6 @@ use std::io::Read;
 use std::collections::HashSet;
 use std::cmp;
 
-use colored::Colorize;
-
 
 const GALAXY_EXPANSION: usize = 1_000_000;
 
