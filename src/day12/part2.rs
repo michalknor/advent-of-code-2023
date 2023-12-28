@@ -31,102 +31,7 @@ pub fn main(filename: &str) -> String {
         })
         .collect();
 
-    get_number_of_arrangements(&springs).to_string()
-}
-
-
-fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
-    let mut number_of_arrangements: usize = 0;
-    let mut memory: HashMap<(String, Vec<usize>), usize> = HashMap::new();
-
-    for spring in springs {
-        println!("{:?}", spring);
-        let legend: Vec<usize> = spring
-            .1
-            .iter()
-            .cloned()
-            .cycle()
-            .take((REPEAT_TIMES) * spring.1.len())
-            .collect();
-
-        let total: usize = legend.iter().sum();
-        
-        let mut queue: Vec<(String, usize, Vec<usize>, Vec<(String, Vec<usize>)>)> = vec![
-            (
-                simplify_spring(&vec![spring.0.to_string(); REPEAT_TIMES].join("?"), &legend.clone()),
-                0,
-                legend.clone(),
-                Vec::new()
-            )
-        ];
-
-        // println!("{:?}", simplify_spring(&vec![spring.0.to_string(); REPEAT_TIMES].join("?"), &legend));
-
-        queue[0].1 = queue[0].0.chars().filter(|&c| c == '#').count();
-        queue[0].3.push((simplify_spring(&vec![spring.0.to_string(); REPEAT_TIMES].join("?"), &legend), legend.clone()));
-
-        while !queue.is_empty() {
-            let item: (String, usize, Vec<usize>, Vec<(String, Vec<usize>)>) = queue.pop().unwrap();
-            let item_spring: String = item.0;
-            let fill_count: usize = item.1;
-            let item_legend: Vec<usize> = item.2;
-            let item_history: Vec<(String, Vec<usize>)> = item.3;
-
-            if memory.contains_key(&(item_spring.clone(), item_legend.clone())) {
-                let memory_new_spring: usize = *memory.get(&(item_spring.clone(), item_legend.clone())).unwrap();
-                number_of_arrangements += memory_new_spring;
-                let mut bla = item_history.clone();
-                bla.pop();
-                for h in bla {
-                    *memory.entry((h.0, h.1)).or_insert(0) += memory_new_spring;
-                }
-                continue
-            }
-
-            if !item_spring.contains('?') || fill_count == total {
-                let add_count: usize = match arrangement_is_valid(&item_spring, &item_legend) {
-                    true => 1,
-                    _ => 0
-                };
-                
-                number_of_arrangements += add_count;
-                for h in item_history {
-                    *memory.entry((h.0, h.1)).or_insert(0) += add_count;
-                }
-                continue
-            }
-
-            let new_spring_and_legend: (String, Vec<usize>) = simplify_spring_and_legend(&item_spring.replacen("?", ".", 1), &(item_legend.clone()));
-            if new_spring_and_legend != (EMPTY_STRING, vec![1]) {
-                let new_spring: String = new_spring_and_legend.0;
-                let new_legend: Vec<usize> = new_spring_and_legend.1;
-
-                let mut new_item_history: Vec<(String, Vec<usize>)> = item_history.clone();
-                new_item_history.push((new_spring.clone(), new_legend.clone()));
-
-                queue.push((new_spring.clone(), fill_count, new_legend, new_item_history.clone()));
-            }
-
-            let new_spring_and_legend: (String, Vec<usize>) = simplify_spring_and_legend(&item_spring.replacen("?", "#", 1), &item_legend);
-            if new_spring_and_legend != (EMPTY_STRING, vec![1]) {
-                let new_spring: String = new_spring_and_legend.0;
-                let new_legend: Vec<usize> = new_spring_and_legend.1;
-                let new_fill_count = new_spring.chars().filter(|&c| c == '#').count();
-                if new_fill_count > total {
-                    continue
-                }
-
-                let mut new_item_history: Vec<(String, Vec<usize>)> = item_history.clone();
-                new_item_history.push((new_spring.clone(), new_legend.clone()));
-
-                queue.push((new_spring.clone(), fill_count, new_legend.clone(), new_item_history.clone()));
-            }
-        }
-    }
-
-    // println!("{:?}", memory);
-
-    number_of_arrangements
+    get_number_of_arrangements_parallel(&springs).to_string()
 }
 
 
@@ -134,7 +39,6 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
     springs.par_iter().map(|spring| {
         let mut number_of_arrangements: usize = 0;
         let mut memory: HashMap<(String, Vec<usize>), usize> = HashMap::new();
-        println!("{:?}", spring);
         let legend: Vec<usize> = spring
             .1
             .iter()
@@ -154,14 +58,12 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
             )
         ];
 
-        // println!("{:?}", simplify_spring(&vec![spring.0.to_string(); REPEAT_TIMES].join("?"), &legend));
-
         queue[0].1 = queue[0].0.chars().filter(|&c| c == '#').count();
         queue[0].3.push((simplify_spring(&vec![spring.0.to_string(); REPEAT_TIMES].join("?"), &legend), legend.clone()));
 
         while !queue.is_empty() {
             let item: (String, usize, Vec<usize>, Vec<(String, Vec<usize>)>) = queue.pop().unwrap();
-            let item_spring: String = item.0;
+            let item_spring: String = item.0[item.0.chars().position(|c| c != '.').unwrap_or_default()..].to_string();
             let fill_count: usize = item.1;
             let item_legend: Vec<usize> = item.2;
             let item_history: Vec<(String, Vec<usize>)> = item.3;
@@ -177,6 +79,13 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
                 continue
             }
 
+            if item_spring.chars().filter(|&c| c != '.').count() < item_legend.iter().sum() {
+                for h in item_history.clone() {
+                    *memory.entry((h.0, h.1)).or_insert(0) += 0;
+                }
+                continue;
+            }
+
             if !item_spring.contains('?') || fill_count == total {
                 let add_count: usize = match arrangement_is_valid(&item_spring, &item_legend) {
                     true => 1,
@@ -184,7 +93,7 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
                 };
                 
                 number_of_arrangements += add_count;
-                for h in item_history {
+                for h in item_history.clone() {
                     *memory.entry((h.0, h.1)).or_insert(0) += add_count;
                 }
                 continue
@@ -194,11 +103,16 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
             if new_spring_and_legend != (EMPTY_STRING, vec![1]) {
                 let new_spring: String = new_spring_and_legend.0;
                 let new_legend: Vec<usize> = new_spring_and_legend.1;
-
                 let mut new_item_history: Vec<(String, Vec<usize>)> = item_history.clone();
+
                 new_item_history.push((new_spring.clone(), new_legend.clone()));
 
                 queue.push((new_spring.clone(), fill_count, new_legend, new_item_history.clone()));
+            }
+            else {
+                for h in item_history.clone() {
+                    *memory.entry((h.0, h.1)).or_insert(0) += 0;
+                }
             }
 
             let new_spring_and_legend: (String, Vec<usize>) = simplify_spring_and_legend(&item_spring.replacen("?", "#", 1), &item_legend);
@@ -206,6 +120,7 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
                 let new_spring: String = new_spring_and_legend.0;
                 let new_legend: Vec<usize> = new_spring_and_legend.1;
                 let new_fill_count = new_spring.chars().filter(|&c| c == '#').count();
+
                 if new_fill_count > total {
                     continue
                 }
@@ -213,11 +128,14 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
                 let mut new_item_history: Vec<(String, Vec<usize>)> = item_history.clone();
                 new_item_history.push((new_spring.clone(), new_legend.clone()));
 
-                queue.push((new_spring.clone(), fill_count, new_legend.clone(), new_item_history.clone()));
+                queue.push((new_spring.clone(), new_fill_count, new_legend.clone(), new_item_history.clone()));
+            }
+            else {
+                for h in item_history.clone() {
+                    *memory.entry((h.0, h.1)).or_insert(0) += 0;
+                }
             }
         }
-
-        // println!("{:?}", memory);
 
         number_of_arrangements
     })
@@ -271,7 +189,7 @@ fn arrangement_is_valid(item: &String, legend: &Vec<usize>) -> bool {
         result.push(count);
     }
 
-    &result == legend
+    result == *legend
 }
 
 
