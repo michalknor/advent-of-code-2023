@@ -43,6 +43,7 @@ fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
             }
             if item.find('?') == None || total == fill_count {
                 if arrangement_is_valid(&item, &legend) {
+                    println!("{:?}", item);
                     number_of_arrangements += 1;
                 }
                 continue
