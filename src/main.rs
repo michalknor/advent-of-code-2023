@@ -13,6 +13,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 
 use std::time::Instant;
 use std::env;
@@ -59,6 +60,9 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day12 part1", day12::part1::main);
     function_map.insert("day12 part2", day12::part2::main);
+
+    function_map.insert("day13 part1", day13::part1::main);
+    function_map.insert("day13 part2", day13::part2::main);
 
 
     if args.len() == 1 {
@@ -123,6 +127,7 @@ mod tests {
     use crate::day10;
     use crate::day11;
     use crate::day12;
+    use crate::day13;
 
     #[test]
     fn day10_part1() {
@@ -231,6 +236,19 @@ mod tests {
                 .into_string()
                 .unwrap()),
             "525152"
+        );
+    }
+
+    #[test]
+    fn day13_part1() {
+        assert_eq!(day13::part1::main(
+            &Path::new("src")
+                .join("day13")
+                .join("test1.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "405"
         );
     }
 }
