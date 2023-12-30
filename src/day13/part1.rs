@@ -31,8 +31,8 @@ pub fn main(filename: &str) -> String {
 fn get_sum_of_notes(mirrors: &Vec<Vec<Vec<char>>>) -> usize {
     let mut sum: usize = 0;
     for mirror in mirrors {
-        sum += get_vertical_reflection_line_number(&mirror);
         sum += get_horizontal_reflection_line_number(&mirror) * 100;
+        sum += get_vertical_reflection_line_number(&mirror);
     }
 
     sum

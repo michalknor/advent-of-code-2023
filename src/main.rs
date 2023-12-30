@@ -251,6 +251,19 @@ mod tests {
             "405"
         );
     }
+
+    #[test]
+    fn day13_part2() {
+        assert_eq!(day13::part2::main(
+            &Path::new("src")
+                .join("day13")
+                .join("test1.txt")
+                .into_os_string()
+                .into_string()
+                .unwrap()),
+            "400"
+        );
+    }
 }
 
 
