@@ -1,8 +1,6 @@
 use std::fs::File;
 use std::io::Read;
 
-use std::cmp;
-
 
 pub fn main(filename: &str) -> String {
     let mut file = File::open(filename).expect("Failed to open file");
@@ -75,11 +73,12 @@ fn get_horizontal_reflection_line_number(mirror: &Vec<Vec<char>>) -> usize {
 
 
 fn get_vertical_reflection_line_number(mirror: &Vec<Vec<char>>) -> usize {
-    let mut flipped_mirror: Vec<Vec<char>> = mirror.clone();
+    let mut flipped_mirror: Vec<Vec<char>> = Vec::new();
 
-    for i in 0..mirror.len() {
-        for j in 0..mirror[0].len() {
-            flipped_mirror
+    for i in 0..mirror[0].len() {
+        flipped_mirror.push(Vec::new());
+        for j in 0..mirror.len() {
+            flipped_mirror[i].push(mirror[j][i]);
         }
     }
 
