@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::Read;
 
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 
 pub fn main(filename: &str) -> String {
@@ -10,59 +10,177 @@ pub fn main(filename: &str) -> String {
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
-    let sequences: Vec<Vec<char>> = file_content
-        .split(',')
-        .map(|s| s.chars().collect())
-        .collect();
+    let floor: Vec<Vec<char>> = file_content
+		.lines()
+		.map(|line| line
+			.chars()
+			.collect())
+		.collect();
 
-    get_sum_of_sequences(&sequences).to_string()
+    get_sum_of_energized_tiles(&floor).to_string()
 }
 
 
-fn get_sum_of_sequences(sequences: &Vec<Vec<char>>) -> usize {
-    let mut sum: usize = 0;
-    let mut boxes: [HashMap<String, (usize, usize)>; 256] = [(); 256].map(|_| HashMap::default());
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+enum Direction {
+    Up,
+    Right,
+	Down,
+    Left
+}
 
-    for (i, sequence) in sequences.iter().enumerate() {
-        let mut sequence_sum: usize = 0;
-        for j in 0..sequence.len() {
-            if sequence[j] == '-' {
-                let key: String = sequence[0..j].iter().collect::<String>();
-                boxes[sequence_sum].remove(key.clone().as_str());
 
-                break;
-            }
-
-            if sequence[j] == '=' {
-                let key: String = sequence[0..j].iter().collect::<String>();
-                let new_value: usize = sequence[j+1].to_digit(10).unwrap().try_into().unwrap();
-                boxes[sequence_sum]
-                    .entry(key)
-                    .and_modify(|(value, _)| *value = new_value)
-                    .or_insert((new_value, i));
-                
-                break;
-            }
-
-            sequence_sum = (sequence_sum + sequence[j] as usize) * 17 % 256;
+impl Direction {
+    fn get_coords_addition(&self) -> (i8, i8) {
+        match self {
+            Direction::Up => (-1, 0),
+            Direction::Right => (0, 1),
+            Direction::Down => (1, 0),
+            Direction::Left => (0, -1)
         }
     }
 
-    for (i, bandbox) in boxes.iter().enumerate() {
-        if bandbox.is_empty() {
-            continue;
-        }
-        
-        let mut vec_of_tuples: Vec<(usize, usize)> = bandbox
-            .into_iter()
-            .map(|(_, v)| *v)
-            .collect();
-        vec_of_tuples.sort_by_key(|&(_, u8_value)| u8_value);
+    fn variants() -> impl Iterator<Item = Direction> {
+        vec![Direction::Up, Direction::Right, Direction::Down, Direction::Left].into_iter()
+    }
+}
 
-        for j in 0..vec_of_tuples.len() {
-            sum += (i + 1) * (j + 1) * vec_of_tuples[j].0;
+
+fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
+    let mut global_visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
+    let mut max_energized_tiles: usize = 0;
+
+    let max_x: isize = sequences[0].len() as isize;
+    let max_y: isize = sequences.len() as isize;
+
+    for i in 0..max_y {
+        for j in 0..max_x {
+            for starting_direction in Direction::variants() {
+                if global_visited_tiles.contains(&((i, j), starting_direction.clone())) {
+                    continue;
+                }
+
+                // println!("{:?}", &((i, j), starting_direction.clone()));
+
+                let mut queue: Vec<((isize, isize), Direction)> = Vec::new();
+                let mut visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
+                let mut energized_tiles: HashSet<(isize, isize)> = HashSet::new();
+
+                queue.push(((i, j), starting_direction));
+
+                while !queue.is_empty() {
+                    let item: ((isize, isize), Direction) = queue.pop().unwrap();
+
+                    if item.0.0 < 0 || item.0.1 < 0 || max_x <= item.0.0 || max_y <= item.0.1 {
+                        continue;
+                    }
+
+                    if visited_tiles.contains(&item) {
+                        continue
+                    }
+
+                    visited_tiles.insert(item.clone());
+                    energized_tiles.insert(item.0.clone());
+
+                    match sequences[item.0.0 as usize][item.0.1 as usize] {
+                        '-' => {
+                            if item.1 == Direction::Right || item.1 == Direction::Left {
+                                let coords_addition: (i8, i8) = item.1.get_coords_addition();
+                                queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()));
+                                continue;
+                            }
+
+                            let coords_addition: (i8, i8) = Direction::Right.get_coords_addition();
+                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Right));
+
+                            let coords_addition: (i8, i8) = Direction::Left.get_coords_addition();
+                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Left));
+                        },
+                        '|' => {
+                            if item.1 == Direction::Up || item.1 == Direction::Down {
+                                let coords_addition: (i8, i8) = item.1.get_coords_addition();
+                                queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()));
+                                continue;
+                            }
+
+                            let coords_addition: (i8, i8) = Direction::Up.get_coords_addition();
+                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Up));
+
+                            let coords_addition: (i8, i8) = Direction::Down.get_coords_addition();
+                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Down));
+                        }
+                        '/' => {
+                            match item.1 {
+                                Direction::Up => {
+                                    let coords_addition: (i8, i8) = Direction::Right.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Right));
+                                },
+                                Direction::Right => {
+                                    let coords_addition: (i8, i8) = Direction::Up.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Up));
+                                },
+                                Direction::Down => {
+                                    let coords_addition: (i8, i8) = Direction::Left.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Left));
+                                },
+                                Direction::Left => {
+                                    let coords_addition: (i8, i8) = Direction::Down.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Down));
+                                },
+                            }
+                        }
+                        '\\' => {
+                            match item.1 {
+                                Direction::Up => {
+                                    let coords_addition: (i8, i8) = Direction::Left.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Left));
+                                },
+                                Direction::Right => {
+                                    let coords_addition: (i8, i8) = Direction::Down.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Down));
+                                },
+                                Direction::Down => {
+                                    let coords_addition: (i8, i8) = Direction::Right.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Right));
+                                },
+                                Direction::Left => {
+                                    let coords_addition: (i8, i8) = Direction::Up.get_coords_addition();
+                                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Up));
+                                },
+                            }
+                        }
+                        _ => {
+                            let coords_addition: (i8, i8) = item.1.get_coords_addition();
+                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()))
+                        }
+                    }
+                }
+
+                if energized_tiles.len() > max_energized_tiles {
+                    max_energized_tiles = energized_tiles.len();
+                    if max_energized_tiles == 8237 {
+                        for a in 0..max_y {
+                            for b in 0..max_x {
+                                if energized_tiles.contains(&(a, b)) {
+                                    print!("#");
+                                }
+                                else {
+                                    print!(".");
+                                }
+                            }
+                            println!();
+                        }
+                        return 0
+                    }
+                }
+
+                global_visited_tiles = global_visited_tiles
+                    .union(&visited_tiles)
+                    .cloned()
+                    .collect::<HashSet<((isize, isize), Direction)>>();
+            }
         }
     }
 
-    sum
+    max_energized_tiles
 }

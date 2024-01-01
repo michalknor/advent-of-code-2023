@@ -218,6 +218,11 @@ mod tests {
 
     #[test]
     fn day16_part1() {
-        assert_eq!(day16::part1::main(&get_path("day16", "test1.txt")), "145");
+        assert_eq!(day16::part1::main(&get_path("day16", "test1.txt")), "46");
+    }
+
+    #[test]
+    fn day16_part2() {
+        assert_eq!(day16::part2::main(&get_path("day16", "test1.txt")), "51");
     }
 }

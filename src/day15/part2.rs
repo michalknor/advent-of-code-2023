@@ -20,7 +20,6 @@ pub fn main(filename: &str) -> String {
 
 
 fn get_sum_of_sequences(sequences: &Vec<Vec<char>>) -> usize {
-    let mut sum: usize = 0;
     let mut boxes: [HashMap<String, (usize, usize)>; 256] = [(); 256].map(|_| HashMap::default());
 
     for (i, sequence) in sequences.iter().enumerate() {
@@ -47,6 +46,8 @@ fn get_sum_of_sequences(sequences: &Vec<Vec<char>>) -> usize {
             sequence_sum = (sequence_sum + sequence[j] as usize) * 17 % 256;
         }
     }
+    
+    let mut sum: usize = 0;
 
     for (i, bandbox) in boxes.iter().enumerate() {
         if bandbox.is_empty() {
