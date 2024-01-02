@@ -17,6 +17,7 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
 
 use std::time::Instant;
 use std::env;
@@ -75,6 +76,9 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day16 part1", day16::part1::main);
     function_map.insert("day16 part2", day16::part2::main);
+
+    function_map.insert("day17 part1", day17::part1::main);
+    function_map.insert("day17 part2", day17::part2::main);
 
 
     if args.len() == 1 {
@@ -146,6 +150,7 @@ mod tests {
     use crate::day14;
     use crate::day15;
     use crate::day16;
+    use crate::day17;
 
     fn get_path(day: &str, file: &str) -> String {
         Path::new("src")
@@ -224,5 +229,10 @@ mod tests {
     #[test]
     fn day16_part2() {
         assert_eq!(day16::part2::main(&get_path("day16", "test1.txt")), "51");
+    }
+
+    #[test]
+    fn day17_part1() {
+        assert_eq!(day17::part1::main(&get_path("day17", "test1.txt")), "102");
     }
 }

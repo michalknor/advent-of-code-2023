@@ -4,23 +4,6 @@ use std::io::Read;
 use std::collections::HashSet;
 
 
-pub fn main(filename: &str) -> String {
-    let mut file = File::open(filename).expect("Failed to open file");
-	let mut file_content: String = String::new();
-
-	file.read_to_string(&mut file_content).expect("Failed to read file content");
-
-    let floor: Vec<Vec<char>> = file_content
-		.lines()
-		.map(|line| line
-			.chars()
-			.collect())
-		.collect();
-
-    get_sum_of_energized_tiles(&floor).to_string()
-}
-
-
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
 enum Direction {
     Up,
@@ -42,6 +25,23 @@ impl Direction {
 }
 
 
+pub fn main(filename: &str) -> String {
+    let mut file = File::open(filename).expect("Failed to open file");
+	let mut file_content: String = String::new();
+
+	file.read_to_string(&mut file_content).expect("Failed to read file content");
+
+    let floor: Vec<Vec<char>> = file_content
+		.lines()
+		.map(|line| line
+			.chars()
+			.collect())
+		.collect();
+
+    get_sum_of_energized_tiles(&floor).to_string()
+}
+
+
 fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
     let mut queue: Vec<((isize, isize), Direction)> = Vec::new();
     let mut visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
@@ -49,13 +49,13 @@ fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
 
     queue.push(((65, 43), Direction::Down));
 
-    let max_x: isize = sequences[0].len() as isize;
-    let max_y: isize = sequences.len() as isize;
+    let len_x: isize = sequences[0].len() as isize;
+    let len_y: isize = sequences.len() as isize;
 
     while !queue.is_empty() {
         let item: ((isize, isize), Direction) = queue.pop().unwrap();
 
-        if item.0.0 < 0 || item.0.1 < 0 || max_x <= item.0.0 || max_y <= item.0.1 {
+        if item.0.0 < 0 || item.0.1 < 0 || len_x <= item.0.0 || len_y <= item.0.1 {
             continue;
         }
 

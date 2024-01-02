@@ -63,6 +63,12 @@ fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
 
 
     for starting_position in starting_positions {
+        if global_visited_tiles.contains(&starting_position) {
+            continue;
+        }
+
+        // println!("{:?}", &((i, j), starting_direction.clone()));
+
         let mut queue: Vec<((isize, isize), Direction)> = Vec::new();
         let mut visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
         let mut energized_tiles: HashSet<(isize, isize)> = HashSet::new();
@@ -87,7 +93,7 @@ fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
                 '-' => {
                     if item.1 == Direction::Right || item.1 == Direction::Left {
                         let coords_addition: (i8, i8) = item.1.get_coords_addition();
-                        queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1));
+                        queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()));
                         continue;
                     }
 
@@ -100,7 +106,7 @@ fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
                 '|' => {
                     if item.1 == Direction::Up || item.1 == Direction::Down {
                         let coords_addition: (i8, i8) = item.1.get_coords_addition();
-                        queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1));
+                        queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()));
                         continue;
                     }
 
@@ -152,14 +158,33 @@ fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
                 }
                 _ => {
                     let coords_addition: (i8, i8) = item.1.get_coords_addition();
-                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1))
+                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()))
                 }
             }
         }
 
         if energized_tiles.len() > max_energized_tiles {
             max_energized_tiles = energized_tiles.len();
+            if max_energized_tiles == 8237 {
+                for a in 0..len_y {
+                    for b in 0..len_x {
+                        if energized_tiles.contains(&(a, b)) {
+                            print!("#");
+                        }
+                        else {
+                            print!(".");
+                        }
+                    }
+                    println!();
+                }
+                return 0
+            }
         }
+
+        global_visited_tiles = global_visited_tiles
+            .union(&visited_tiles)
+            .cloned()
+            .collect::<HashSet<((isize, isize), Direction)>>();
     }
 
     max_energized_tiles
