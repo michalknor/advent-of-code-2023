@@ -47,7 +47,7 @@ fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
     let mut visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
     let mut energized_tiles: HashSet<(isize, isize)> = HashSet::new();
 
-    queue.push(((65, 43), Direction::Down));
+    queue.push(((0, 0), Direction::Right));
 
     let len_x: isize = sequences[0].len() as isize;
     let len_y: isize = sequences.len() as isize;

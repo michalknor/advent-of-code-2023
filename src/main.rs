@@ -235,4 +235,10 @@ mod tests {
     fn day17_part1() {
         assert_eq!(day17::part1::main(&get_path("day17", "test1.txt")), "102");
     }
+
+    #[test]
+    fn day17_part2() {
+        assert_eq!(day17::part2::main(&get_path("day17", "test1.txt")), "94");
+        assert_eq!(day17::part2::main(&get_path("day17", "test2.txt")), "71");
+    }
 }

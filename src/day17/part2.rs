@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::Read;
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
@@ -22,6 +22,10 @@ impl Direction {
             Direction::Left => (0, -1)
         }
     }
+
+    fn get_variants() -> Vec<Direction> {
+        vec![Direction::Up, Direction::Left, Direction::Right, Direction::Down]
+    }
 }
 
 
@@ -31,161 +35,104 @@ pub fn main(filename: &str) -> String {
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
-    let floor: Vec<Vec<char>> = file_content
+    let heatmap: Vec<Vec<usize>> = file_content
 		.lines()
 		.map(|line| line
 			.chars()
+            .map(|c| c.to_digit(10).unwrap() as usize)
 			.collect())
 		.collect();
 
-    get_sum_of_energized_tiles(&floor).to_string()
+    get_least_heat_loss(&heatmap).to_string()
 }
 
 
-fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
-    let mut global_visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
-    let mut max_energized_tiles: usize = 0;
+fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
+    let mut visited_blocks: HashMap<((usize, usize), Direction, u8), usize> = HashMap::new();
+    let mut queue: Vec<(((usize, usize), Direction, u8), usize)> = Vec::new();
 
-    let len_x: isize = sequences[0].len() as isize;
-    let len_y: isize = sequences.len() as isize;
+    let max_coords: (usize, usize) = (heatmap.len() - 1, heatmap[0].len() - 1);
+    let mut min_heat_loss: usize = usize::MAX;
 
-    let mut starting_positions: Vec<((isize, isize), Direction)> = Vec::new();
+    queue.push((((1, 0), Direction::Down, 1), heatmap[1][0]));
+    queue.push((((0, 1), Direction::Right, 1), heatmap[0][1]));
 
-    for i in 0..len_x {
-        starting_positions.push(((0, i), Direction::Down));
-        starting_positions.push(((len_y-1, i), Direction::Up));
-    }
+    while !queue.is_empty() {
+        let item: (((usize, usize), Direction, u8), usize) = queue.pop().unwrap();
 
-    for i in 0..len_y {
-        starting_positions.push(((i, 0), Direction::Right));
-        starting_positions.push(((i, len_x-1), Direction::Left));
-    }
+        if visited_blocks.contains_key(&item.0) {
+            if *visited_blocks.get(&item.0).unwrap() <= item.1 {
+                continue;
+            }
+        }
 
-
-    for starting_position in starting_positions {
-        if global_visited_tiles.contains(&starting_position) {
+        if item.1 >= min_heat_loss {
             continue;
         }
 
-        // println!("{:?}", &((i, j), starting_direction.clone()));
+        if item.0.0 == (max_coords.0, max_coords.1) {
+            min_heat_loss = item.1;
+            continue;
+        }
 
-        let mut queue: Vec<((isize, isize), Direction)> = Vec::new();
-        let mut visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
-        let mut energized_tiles: HashSet<(isize, isize)> = HashSet::new();
+        visited_blocks.insert(item.0.clone(), item.1);
 
-        queue.push(starting_position.clone());
+        if item.0.2 < 3 {
+            let coords_addition = item.0.1.get_coords_addition();
+            if is_valid_mode(item.0.0, max_coords, coords_addition) {
+                let new_coord: (usize, usize) = (
+                    (item.0.0.0 as isize + coords_addition.0 as isize) as usize, 
+                    (item.0.0.1 as isize + coords_addition.1 as isize) as usize
+                );
+                queue.push((((new_coord.0, new_coord.1), item.0.1.clone(), item.0.2 + 1), item.1 + heatmap[new_coord.0][new_coord.1]));
+            }
+        }
 
-        while !queue.is_empty() {
-            let item: ((isize, isize), Direction) = queue.pop().unwrap();
-
-            if item.0.0 < 0 || item.0.1 < 0 || len_x <= item.0.0 || len_y <= item.0.1 {
+        for new_direction in Direction::get_variants() {
+            if new_direction == item.0.1 {
                 continue;
             }
 
-            if visited_tiles.contains(&item) {
-                continue
+            let coords_addition = new_direction.get_coords_addition();
+
+            if item.0.1.get_coords_addition() == (-coords_addition.0, -coords_addition.1) {
+                continue;
             }
-
-            visited_tiles.insert(item.clone());
-            energized_tiles.insert(item.0.clone());
-
-            match sequences[item.0.0 as usize][item.0.1 as usize] {
-                '-' => {
-                    if item.1 == Direction::Right || item.1 == Direction::Left {
-                        let coords_addition: (i8, i8) = item.1.get_coords_addition();
-                        queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()));
-                        continue;
-                    }
-
-                    let coords_addition: (i8, i8) = Direction::Right.get_coords_addition();
-                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Right));
-
-                    let coords_addition: (i8, i8) = Direction::Left.get_coords_addition();
-                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Left));
-                },
-                '|' => {
-                    if item.1 == Direction::Up || item.1 == Direction::Down {
-                        let coords_addition: (i8, i8) = item.1.get_coords_addition();
-                        queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()));
-                        continue;
-                    }
-
-                    let coords_addition: (i8, i8) = Direction::Up.get_coords_addition();
-                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Up));
-
-                    let coords_addition: (i8, i8) = Direction::Down.get_coords_addition();
-                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Down));
-                }
-                '/' => {
-                    match item.1 {
-                        Direction::Up => {
-                            let coords_addition: (i8, i8) = Direction::Right.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Right));
-                        },
-                        Direction::Right => {
-                            let coords_addition: (i8, i8) = Direction::Up.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Up));
-                        },
-                        Direction::Down => {
-                            let coords_addition: (i8, i8) = Direction::Left.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Left));
-                        },
-                        Direction::Left => {
-                            let coords_addition: (i8, i8) = Direction::Down.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Down));
-                        },
-                    }
-                }
-                '\\' => {
-                    match item.1 {
-                        Direction::Up => {
-                            let coords_addition: (i8, i8) = Direction::Left.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Left));
-                        },
-                        Direction::Right => {
-                            let coords_addition: (i8, i8) = Direction::Down.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Down));
-                        },
-                        Direction::Down => {
-                            let coords_addition: (i8, i8) = Direction::Right.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Right));
-                        },
-                        Direction::Left => {
-                            let coords_addition: (i8, i8) = Direction::Up.get_coords_addition();
-                            queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), Direction::Up));
-                        },
-                    }
-                }
-                _ => {
-                    let coords_addition: (i8, i8) = item.1.get_coords_addition();
-                    queue.push(((item.0.0 + coords_addition.0 as isize, item.0.1 + coords_addition.1 as isize), item.1.clone()))
-                }
+            
+            if is_valid_mode(item.0.0, max_coords, coords_addition) {
+                let new_coord: (usize, usize) = (
+                    (item.0.0.0 as isize + coords_addition.0 as isize) as usize, 
+                    (item.0.0.1 as isize + coords_addition.1 as isize) as usize
+                );
+                queue.push((((new_coord.0, new_coord.1), new_direction, 1), item.1 + heatmap[new_coord.0][new_coord.1]));
             }
         }
-
-        if energized_tiles.len() > max_energized_tiles {
-            max_energized_tiles = energized_tiles.len();
-            if max_energized_tiles == 8237 {
-                for a in 0..len_y {
-                    for b in 0..len_x {
-                        if energized_tiles.contains(&(a, b)) {
-                            print!("#");
-                        }
-                        else {
-                            print!(".");
-                        }
-                    }
-                    println!();
-                }
-                return 0
-            }
-        }
-
-        global_visited_tiles = global_visited_tiles
-            .union(&visited_tiles)
-            .cloned()
-            .collect::<HashSet<((isize, isize), Direction)>>();
     }
 
-    max_energized_tiles
+    // for a in visited_blocks {
+    //     println!("{:?} ", a);
+    // }
+
+    min_heat_loss
+}
+
+
+fn is_valid_mode(coords: (usize, usize), max_coords: (usize, usize), coords_addition: (i8, i8)) -> bool {
+    if coords.0 == 0 && coords_addition.0 == -1 {
+        return false;
+    }
+
+    if coords.1 == 0 && coords_addition.1 == -1 {
+        return false;
+    }
+
+    if coords.0 == max_coords.0 && coords_addition.0 == 1 {
+        return false;
+    }
+
+    if coords.1 == max_coords.1 && coords_addition.1 == 1 {
+        return false;
+    }
+
+    true
 }
