@@ -54,8 +54,8 @@ fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
     let max_coords: (usize, usize) = (heatmap.len() - 1, heatmap[0].len() - 1);
     let mut min_heat_loss: usize = usize::MAX;
 
-    queue.push((((1, 0), Direction::Down, 1), heatmap[1][0]));
-    queue.push((((0, 1), Direction::Right, 1), heatmap[0][1]));
+    queue.push((((4, 0), Direction::Down, 4), heatmap[1][0]+heatmap[2][0]+heatmap[3][0]+heatmap[4][0]));
+    queue.push((((0, 4), Direction::Right, 4), heatmap[0][1]+heatmap[0][2]+heatmap[0][3]+heatmap[0][4]));
 
     while !queue.is_empty() {
         let item: (((usize, usize), Direction, u8), usize) = queue.pop().unwrap();
@@ -77,7 +77,7 @@ fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
 
         visited_blocks.insert(item.0.clone(), item.1);
 
-        if item.0.2 < 3 {
+        if item.0.2 < 10 {
             let coords_addition = item.0.1.get_coords_addition();
             if is_valid_mode(item.0.0, max_coords, coords_addition) {
                 let new_coord: (usize, usize) = (
@@ -88,7 +88,7 @@ fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
             }
         }
 
-        for new_direction in Direction::get_variants() {
+        'direction: for new_direction in Direction::get_variants() {
             if new_direction == item.0.1 {
                 continue;
             }
@@ -98,20 +98,22 @@ fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
             if item.0.1.get_coords_addition() == (-coords_addition.0, -coords_addition.1) {
                 continue;
             }
-            
-            if is_valid_mode(item.0.0, max_coords, coords_addition) {
-                let new_coord: (usize, usize) = (
-                    (item.0.0.0 as isize + coords_addition.0 as isize) as usize, 
-                    (item.0.0.1 as isize + coords_addition.1 as isize) as usize
-                );
-                queue.push((((new_coord.0, new_coord.1), new_direction, 1), item.1 + heatmap[new_coord.0][new_coord.1]));
+
+            let mut new_coord: (usize, usize) = item.0.0.clone();
+            let mut heat_loss = item.1;
+            for _ in 0..4 {
+                if !is_valid_mode(new_coord, max_coords, coords_addition) {
+                    continue 'direction;
+                }
+
+                new_coord.0 = (new_coord.0 as isize + coords_addition.0 as isize) as usize;
+                new_coord.1 = (new_coord.1 as isize + coords_addition.1 as isize) as usize;
+
+                heat_loss += heatmap[new_coord.0][new_coord.1];
             }
+            queue.push((((new_coord.0, new_coord.1), new_direction, 4), heat_loss));
         }
     }
-
-    // for a in visited_blocks {
-    //     println!("{:?} ", a);
-    // }
 
     min_heat_loss
 }

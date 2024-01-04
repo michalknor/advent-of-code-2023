@@ -43,7 +43,6 @@ pub fn main(filename: &str) -> String {
 
 
 fn get_sum_of_energized_tiles(sequences: &Vec<Vec<char>>) -> usize {
-    let mut global_visited_tiles: HashSet<((isize, isize), Direction)> = HashSet::new();
     let mut max_energized_tiles: usize = 0;
 
     let len_x: isize = sequences[0].len() as isize;

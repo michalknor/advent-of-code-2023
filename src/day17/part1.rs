@@ -109,10 +109,6 @@ fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
         }
     }
 
-    // for a in visited_blocks {
-    //     println!("{:?} ", a);
-    // }
-
     min_heat_loss
 }
 
