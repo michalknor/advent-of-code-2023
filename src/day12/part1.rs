@@ -33,9 +33,9 @@ fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
     for spring in springs {
         let legend: &Vec<usize> = &spring.1;
         let total: usize = legend.iter().sum();
-        let mut queue: Vec<String> = vec![simplify_spring(&spring.0.to_string(), legend)];
-        while !queue.is_empty() {
-            let item: String = queue.pop().unwrap();
+        let mut stack: Vec<String> = vec![simplify_spring(&spring.0.to_string(), legend)];
+        while !stack.is_empty() {
+            let item: String = stack.pop().unwrap();
             let fill_count: usize = item.chars().filter(|&c| c == '#').count();
             let unknown_count: usize = item.chars().filter(|&c| c == '?').count();
             if total > unknown_count + fill_count {
@@ -47,8 +47,8 @@ fn get_number_of_arrangements(springs: &Vec<(&str, Vec<usize>)>) -> usize {
                 }
                 continue
             }
-            queue.push(item.replacen("?", ".", 1));
-            queue.push(item.replacen("?", "#", 1));
+            stack.push(item.replacen("?", ".", 1));
+            stack.push(item.replacen("?", "#", 1));
         }
     }
 

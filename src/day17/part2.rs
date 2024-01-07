@@ -49,16 +49,16 @@ pub fn main(filename: &str) -> String {
 
 fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
     let mut visited_blocks: HashMap<((usize, usize), Direction, u8), usize> = HashMap::new();
-    let mut queue: Vec<(((usize, usize), Direction, u8), usize)> = Vec::new();
+    let mut stack: Vec<(((usize, usize), Direction, u8), usize)> = Vec::new();
 
     let max_coords: (usize, usize) = (heatmap.len() - 1, heatmap[0].len() - 1);
     let mut min_heat_loss: usize = usize::MAX;
 
-    queue.push((((4, 0), Direction::Down, 4), heatmap[1][0]+heatmap[2][0]+heatmap[3][0]+heatmap[4][0]));
-    queue.push((((0, 4), Direction::Right, 4), heatmap[0][1]+heatmap[0][2]+heatmap[0][3]+heatmap[0][4]));
+    stack.push((((4, 0), Direction::Down, 4), heatmap[1][0]+heatmap[2][0]+heatmap[3][0]+heatmap[4][0]));
+    stack.push((((0, 4), Direction::Right, 4), heatmap[0][1]+heatmap[0][2]+heatmap[0][3]+heatmap[0][4]));
 
-    while !queue.is_empty() {
-        let item: (((usize, usize), Direction, u8), usize) = queue.pop().unwrap();
+    while !stack.is_empty() {
+        let item: (((usize, usize), Direction, u8), usize) = stack.pop().unwrap();
 
         if visited_blocks.contains_key(&item.0) {
             if *visited_blocks.get(&item.0).unwrap() <= item.1 {
@@ -84,7 +84,7 @@ fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
                     (item.0.0.0 as isize + coords_addition.0 as isize) as usize, 
                     (item.0.0.1 as isize + coords_addition.1 as isize) as usize
                 );
-                queue.push((((new_coord.0, new_coord.1), item.0.1.clone(), item.0.2 + 1), item.1 + heatmap[new_coord.0][new_coord.1]));
+                stack.push((((new_coord.0, new_coord.1), item.0.1.clone(), item.0.2 + 1), item.1 + heatmap[new_coord.0][new_coord.1]));
             }
         }
 
@@ -111,7 +111,7 @@ fn get_least_heat_loss(heatmap: &Vec<Vec<usize>>) -> usize {
 
                 heat_loss += heatmap[new_coord.0][new_coord.1];
             }
-            queue.push((((new_coord.0, new_coord.1), new_direction, 4), heat_loss));
+            stack.push((((new_coord.0, new_coord.1), new_direction, 4), heat_loss));
         }
     }
 

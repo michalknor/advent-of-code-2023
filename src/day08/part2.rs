@@ -94,12 +94,10 @@ fn least_common_multiple(number_of_steps: &Vec<usize>) -> usize {
 
 
 fn greatest_common_divisor(smaller_number: usize, larger_number: usize) -> usize {
-	//(1..=smaller_number).rev().find(|&i| smaller_number % i == 0 && larger_number % i == 0).unwrap_or(1)
-	for i in (1..smaller_number+1).rev() {
-		if smaller_number % i == 0 && larger_number % i == 0 {
-			return i
-		}
-	}
-
-	1
+	(1..=smaller_number)
+		.rev()
+		.find(|&i| 
+			smaller_number % i == 0 && larger_number % i == 0
+		)
+		.unwrap_or(1)
 }

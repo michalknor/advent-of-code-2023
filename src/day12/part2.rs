@@ -49,7 +49,7 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
 
         let total: usize = legend.iter().sum();
         
-        let mut queue: Vec<(String, usize, Vec<usize>, Vec<(String, Vec<usize>)>)> = vec![
+        let mut stack: Vec<(String, usize, Vec<usize>, Vec<(String, Vec<usize>)>)> = vec![
             (
                 vec![spring.0.to_string(); REPEAT_TIMES].join("?"),
                 0,
@@ -58,11 +58,11 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
             )
         ];
 
-        queue[0].1 = queue[0].0.chars().filter(|&c| c == '#').count();
-        queue[0].3.push((simplify_spring(&vec![spring.0.to_string(); REPEAT_TIMES].join("?"), &legend), legend.clone()));
+        stack[0].1 = stack[0].0.chars().filter(|&c| c == '#').count();
+        stack[0].3.push((simplify_spring(&vec![spring.0.to_string(); REPEAT_TIMES].join("?"), &legend), legend.clone()));
 
-        while !queue.is_empty() {
-            let item: (String, usize, Vec<usize>, Vec<(String, Vec<usize>)>) = queue.pop().unwrap();
+        while !stack.is_empty() {
+            let item: (String, usize, Vec<usize>, Vec<(String, Vec<usize>)>) = stack.pop().unwrap();
             let item_spring: String = item.0[item.0.chars().position(|c| c != '.').unwrap_or_default()..].to_string();
             let fill_count: usize = item.1;
             let item_legend: Vec<usize> = item.2;
@@ -107,7 +107,7 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
 
                 new_item_history.push((new_spring.clone(), new_legend.clone()));
 
-                queue.push((new_spring.clone(), fill_count, new_legend, new_item_history.clone()));
+                stack.push((new_spring.clone(), fill_count, new_legend, new_item_history.clone()));
             }
             else {
                 for h in item_history.clone() {
@@ -128,7 +128,7 @@ fn get_number_of_arrangements_parallel(springs: &Vec<(&str, Vec<usize>)>) -> usi
                 let mut new_item_history: Vec<(String, Vec<usize>)> = item_history.clone();
                 new_item_history.push((new_spring.clone(), new_legend.clone()));
 
-                queue.push((new_spring.clone(), new_fill_count, new_legend.clone(), new_item_history.clone()));
+                stack.push((new_spring.clone(), new_fill_count, new_legend.clone(), new_item_history.clone()));
             }
             else {
                 for h in item_history.clone() {
