@@ -37,7 +37,7 @@ fn evaluate_game(modified_line: &str) -> u32 {
 }
 
 pub fn main(filename: &str) -> String {
-    let mut file = File::open(filename).expect("Failed to open file");
+    let mut file: File = File::open(filename).expect("Failed to open file");
 	let mut file_content: String = String::new();
 
 

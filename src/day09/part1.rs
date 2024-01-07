@@ -31,7 +31,7 @@ fn sum_extrapolated_values(histories: &Vec<Vec<i32>>) -> i32 {
 
 
 pub fn main(filename: &str) -> String {
-    let mut file = File::open(filename).expect("Failed to open file");
+    let mut file: File = File::open(filename).expect("Failed to open file");
 	let mut file_content: String = String::new();
 
 

@@ -32,7 +32,7 @@ fn convert_location_to_seed(location: u64, recipe: &Vec<Vec<u64>>) -> u64 {
 
 
 pub fn main(filename: &str) -> String {
-    let mut file = File::open(filename).expect("Failed to open file");
+    let mut file: File = File::open(filename).expect("Failed to open file");
 	let mut file_content: String = String::new();
 
 

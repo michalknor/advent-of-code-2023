@@ -27,7 +27,7 @@ fn number_of_ways_multiplied_together(times: Vec<u32>, distances: Vec<u32>) -> u
 
 
 pub fn main(filename: &str) -> String {
-    let mut file = File::open(filename).expect("Failed to open file");
+    let mut file: File = File::open(filename).expect("Failed to open file");
 	let mut file_content: String = String::new();
 
 

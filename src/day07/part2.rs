@@ -75,7 +75,7 @@ fn compare_hands(hand_1: &str, hand_2: &str) -> std::cmp::Ordering {
 }
 
 pub fn main(filename: &str) -> String {
-    let mut file = File::open(filename).expect("Failed to open file");
+    let mut file: File = File::open(filename).expect("Failed to open file");
 	let mut file_content: String = String::new();
 
 
