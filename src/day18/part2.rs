@@ -26,8 +26,8 @@ impl Direction {
 
 
 pub fn main(filename: &str) -> String {
-    let mut file = File::open(filename).expect("Failed to open file");
-	let mut file_content: String = String::new();
+    let mut file: File = File::open(filename).expect("Failed to open file");
+	let mut file: File_content: String = String::new();
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
@@ -112,10 +112,6 @@ fn get_shoelace_area(vertices: &Vec<(isize, isize)>) -> usize {
     let n = vertices.len();
     
     (0..n).map(|i| {
-        let x1 = vertices[i].0;
-        let y1 = vertices[i].1;
-        let x2 = vertices[(i + 1) % n].0;
-        let y2 = vertices[(i + 1) % n].1;
-        x1 * y2 - x2 * y1
+        vertices[i].0 * vertices[(i + 1) % n].1 - vertices[i].1 * vertices[(i + 1) % n].0
     }).sum::<isize>().abs() as usize / 2
 }
