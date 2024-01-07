@@ -23,7 +23,11 @@ fn evaluate_ticket(winning_numbers: Vec<u32>, your_numbers: Vec<u32>) -> u32 {
 
 pub fn main(filename: &str) -> String {
     let mut file: File = File::open(filename).expect("Failed to open file");
+<<<<<<< HEAD
 	let mut file_content: String = String::new();
+=======
+	let mut file: File_content: String = String::new();
+>>>>>>> 84da3640cab7e9c156fa7aa9bc01b57a9bcc4c39
 
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
