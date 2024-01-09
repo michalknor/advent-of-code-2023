@@ -78,28 +78,11 @@ pub fn main(filename: &str) -> String {
         })
         .collect();
 
-    let parts: Vec<HashMap<String, u16>> = second_part
-        .lines()
-        .map(|line| {
-            line
-                .replace("{", "")
-                .replace("}", "")
-                .split(",")
-                .map(|unparsed_part| {
-                        let (category, value) = unparsed_part.split_once("=").unwrap();
-                        (category.to_owned(), value.parse().unwrap())
-                    }
-                )
-                .collect()
-            }
-        )
-        .collect();
-
-    get_sum_of_all_accepted_parts(&workflow, &parts).to_string()
+    get_sum_of_all_accepted_parts(&workflow).to_string()
 }
 
 
-fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>, parts: &Vec<HashMap<String, u16>>) -> usize {
+fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>) -> usize {
     let node_accept: String = NODE_ACCEPT.to_string();
     let node_reject: String = NODE_REJECT.to_string();
 
@@ -122,26 +105,33 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>, parts: &
     while !stack.is_empty() {
         let item: (String, HashMap<String, (u16, u16)>) = stack.pop().unwrap();
 
-        if item.0 == NODE_ACCEPT.to_string() {
+        if item.0 == node_accept {
             sum += item.1
                 .values()
-                .fold::<usize>(
-                    0,
+                .fold(
+                    1,
                     |result, interval: &(u16, u16)|
-                    let switch
+                    result * ((interval.1 - interval.0) as usize)
                 );
             continue;
         }
 
-        if item.0 == NODE_REJECT.to_string() {
+        if item.0 == node_reject {
             continue;
         }
 
-        let 
-
         for rule in workflow.get(&item.0).unwrap() {
             if rule.category == "*" {
-                stack.push();
+                stack.push(item.clone());
+                break;
+            }
+
+            let part: &(u16, u16) = item.1.get(&rule.category).unwrap();
+            
+            if rule.start < rule.end {
+                if rule.start < part.0 || part.1 < rule.start {
+                    continue;
+                }
             }
         }
     }
@@ -161,3 +151,18 @@ fn get_next_node(rules: &Vec<Rule>, part: &HashMap<String, u16>) -> String {
     }
     NODE_REJECT.to_string()
 }
+
+
+/*
+500-2000
+
+
+3000<798797
+500-2999, 3000-2000
+
+1000<798797
+500-999, 1000-2000
+
+100<798797
+500-2000
+ */
