@@ -103,20 +103,46 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>, parts: &
     let node_accept: String = NODE_ACCEPT.to_string();
     let node_reject: String = NODE_REJECT.to_string();
 
+    let mut stack: Vec<(String, HashMap<String, (u16, u16)>)> = vec![
+        (
+            String::from("in"),
+            HashMap::from(
+                [
+                    (String::from("x"), (1, 4000)),
+                    (String::from("m"), (1, 4000)),
+                    (String::from("a"), (1, 4000)),
+                    (String::from("s"), (1, 4000))
+                ]
+            )
+        )
+    ];
+
     let mut sum: usize = 0;
 
-    for part in parts {
-        let mut current_node: String = String::from("in");
+    while !stack.is_empty() {
+        let item: (String, HashMap<String, (u16, u16)>) = stack.pop().unwrap();
 
-        while current_node != node_accept && current_node != node_reject {
-            current_node = get_next_node(workflow.get(&current_node).unwrap(), &part);
+        if item.0 == NODE_ACCEPT.to_string() {
+            sum += item.1
+                .values()
+                .fold::<usize>(
+                    0,
+                    |result, interval: &(u16, u16)|
+                    let switch
+                );
+            continue;
         }
 
-        if current_node == node_accept {
-            sum += part
-                .values()
-                .copied()
-                .sum::<u16>() as usize;
+        if item.0 == NODE_REJECT.to_string() {
+            continue;
+        }
+
+        let 
+
+        for rule in workflow.get(&item.0).unwrap() {
+            if rule.category == "*" {
+                stack.push();
+            }
         }
     }
     
