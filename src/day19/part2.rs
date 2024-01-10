@@ -103,15 +103,16 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>) -> usize
     let mut sum: usize = 0;
 
     while !stack.is_empty() {
-        let item: (String, HashMap<String, (u16, u16)>) = stack.pop().unwrap();
+        let mut item: (String, HashMap<String, (u16, u16)>) = stack.pop().unwrap();
 
         if item.0 == node_accept {
+            println!("{:?}", item);
             sum += item.1
                 .values()
                 .fold(
                     1,
                     |result, interval: &(u16, u16)|
-                    result * ((interval.1 - interval.0) as usize)
+                    result * ((interval.1 - interval.0 + 1) as usize)
                 );
             continue;
         }
@@ -120,19 +121,63 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>) -> usize
             continue;
         }
 
+        //167310838342368
+        //167126283030543
+        //167480304175985
+        //167295608552939
+        //167524517877236
+        //167524517877236
+
+        let mut item2: (String, HashMap<String, (u16, u16)>);
+
         for rule in workflow.get(&item.0).unwrap() {
             if rule.category == "*" {
+                item.0 = rule.send_to.clone();
                 stack.push(item.clone());
                 break;
             }
 
             let part: &(u16, u16) = item.1.get(&rule.category).unwrap();
             
-            if rule.start < rule.end {
-                if rule.start < part.0 || part.1 < rule.start {
+            if rule.start == u16::MIN {
+                if rule.end < part.0 {
                     continue;
                 }
+
+                item2 = item.clone();
+
+                if part.1 <= rule.end {
+                    item2.0 = rule.send_to.clone();
+                    stack.push(item2);
+                    break;
+                }
+                
+                item2.1.insert(rule.category.clone(), (part.0, rule.end));
+                item2.0 = rule.send_to.clone();
+                stack.push(item2);
+
+                item.1.insert(rule.category.clone(), (rule.end+1, part.1));
+                
+                continue;
             }
+
+            if part.1 < rule.start {
+                continue;
+            }
+
+            item2 = item.clone();
+
+            if rule.start <= part.0 {
+                item2.0 = rule.send_to.clone();
+                stack.push(item2);
+                break;
+            }
+            
+            item2.1.insert(rule.category.clone(), (rule.start, part.1));
+            item2.0 = rule.send_to.clone();
+            stack.push(item2);
+
+            item.1.insert(rule.category.clone(), (part.0, rule.start-1));
         }
     }
     
@@ -156,13 +201,5 @@ fn get_next_node(rules: &Vec<Rule>, part: &HashMap<String, u16>) -> String {
 /*
 500-2000
 
-
-3000<798797
-500-2999, 3000-2000
-
-1000<798797
-500-999, 1000-2000
-
-100<798797
-500-2000
+0-500
  */
