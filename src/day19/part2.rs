@@ -183,23 +183,3 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>) -> usize
     
     sum
 }
-
-
-fn get_next_node(rules: &Vec<Rule>, part: &HashMap<String, u16>) -> String {
-    for rule in rules {
-        if rule.category == "*" {
-            return rule.send_to.to_string();
-        }
-        if (rule.start..rule.end).contains(part.get(&rule.category).unwrap()) {
-            return rule.send_to.to_string();
-        }
-    }
-    NODE_REJECT.to_string()
-}
-
-
-/*
-500-2000
-
-0-500
- */
