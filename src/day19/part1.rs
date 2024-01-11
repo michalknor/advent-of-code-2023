@@ -23,9 +23,14 @@ pub fn main(filename: &str) -> String {
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
-    let (first_part, second_part) = file_content
-        .split_once("\r\n\r\n")
-        .unwrap();
+    let (first_part, second_part) = match file_content.find("\r\n\r\n") {
+        None => file_content
+            .split_once("\n\n")
+            .unwrap(),
+        _ => file_content
+            .split_once("\r\n\r\n")
+            .unwrap()
+    };
 
     let workflow: HashMap<String, Vec<Rule>> = first_part
         .lines()

@@ -23,9 +23,16 @@ pub fn main(filename: &str) -> String {
 
 	file.read_to_string(&mut file_content).expect("Failed to read file content");
 
-    let (first_part, second_part) = file_content
-        .split_once("\r\n\r\n")
-        .unwrap();
+    let first_part: &str = match file_content.find("\r\n\r\n") {
+        None => file_content
+            .split_once("\n\n")
+            .unwrap()
+            .0,
+        _ => file_content
+            .split_once("\r\n\r\n")
+            .unwrap()
+            .0
+    };
 
     let workflow: HashMap<String, Vec<Rule>> = first_part
         .lines()
@@ -58,7 +65,7 @@ pub fn main(filename: &str) -> String {
                                 .unwrap()
                                 .parse()
                                 .unwrap();
-                            return Rule { start: u16::MIN, end: end, category: category, send_to: send_to}
+                            return Rule { start: u16::MIN, end: end-1, category: category, send_to: send_to}
                         }
                         let start: u16 = unparsed_rule
                             .find('>')
@@ -69,7 +76,7 @@ pub fn main(filename: &str) -> String {
                             .unwrap()
                             .parse()
                             .unwrap();
-                        return Rule { start: start, end: u16::MAX, category: category, send_to: send_to}
+                        return Rule { start: start+1, end: u16::MAX, category: category, send_to: send_to}
                         
                     }
                 )
@@ -106,7 +113,6 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>) -> usize
         let mut item: (String, HashMap<String, (u16, u16)>) = stack.pop().unwrap();
 
         if item.0 == node_accept {
-            println!("{:?}", item);
             sum += item.1
                 .values()
                 .fold(
@@ -140,17 +146,19 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>) -> usize
             let part: &(u16, u16) = item.1.get(&rule.category).unwrap();
             
             if rule.start == u16::MIN {
+                //no overlap
                 if rule.end < part.0 {
                     continue;
                 }
 
-                item2 = item.clone();
-
+                //no restriction
                 if part.1 <= rule.end {
-                    item2.0 = rule.send_to.clone();
-                    stack.push(item2);
+                    item.0 = rule.send_to.clone();
+                    stack.push(item);
                     break;
                 }
+
+                item2 = item.clone();
                 
                 item2.1.insert(rule.category.clone(), (part.0, rule.end));
                 item2.0 = rule.send_to.clone();
@@ -165,13 +173,13 @@ fn get_sum_of_all_accepted_parts(workflow: &HashMap<String, Vec<Rule>>) -> usize
                 continue;
             }
 
-            item2 = item.clone();
-
             if rule.start <= part.0 {
-                item2.0 = rule.send_to.clone();
-                stack.push(item2);
+                item.0 = rule.send_to.clone();
+                stack.push(item);
                 break;
             }
+
+            item2 = item.clone();
             
             item2.1.insert(rule.category.clone(), (rule.start, part.1));
             item2.0 = rule.send_to.clone();
