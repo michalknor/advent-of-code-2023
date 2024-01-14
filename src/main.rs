@@ -1,6 +1,11 @@
 use std::collections::HashMap;
 use std::path::Path;
 
+use std::time::Instant;
+use std::env;
+
+use colored::Colorize;
+
 mod day01;
 mod day02;
 mod day03;
@@ -21,11 +26,7 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
-
-use std::time::Instant;
-use std::env;
-
-use colored::Colorize;
+mod day21;
 
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -91,6 +92,9 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day20 part1", day20::part1::main);
     function_map.insert("day20 part2", day20::part2::main);
+
+    function_map.insert("day21 part1", day21::part1::main);
+    function_map.insert("day21 part2", day21::part2::main);
 
 
     if args.len() == 1 {
