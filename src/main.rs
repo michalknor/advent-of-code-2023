@@ -279,7 +279,7 @@ mod tests {
     
     #[test]
     fn day20_part1() {
-        assert_eq!(day20::part2::main(&get_path("day20", "test1.txt")), "32000000");
-        assert_eq!(day20::part2::main(&get_path("day20", "test2.txt")), "11687500");
+        assert_eq!(day20::part1::main(&get_path("day20", "test1.txt")), "32000000");
+        assert_eq!(day20::part1::main(&get_path("day20", "test2.txt")), "11687500");
     }
 }
