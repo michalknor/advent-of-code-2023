@@ -27,6 +27,10 @@ mod day18;
 mod day19;
 mod day20;
 mod day21;
+mod day22;
+mod day23;
+mod day24;
+mod day25;
 
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -95,6 +99,18 @@ fn main() -> std::io::Result<()> {
 
     function_map.insert("day21 part1", day21::part1::main);
     function_map.insert("day21 part2", day21::part2::main);
+
+    function_map.insert("day22 part1", day22::part1::main);
+    function_map.insert("day22 part2", day22::part2::main);
+
+    function_map.insert("day23 part1", day23::part1::main);
+    function_map.insert("day23 part2", day23::part2::main);
+
+    function_map.insert("day24 part1", day24::part1::main);
+    function_map.insert("day24 part2", day24::part2::main);
+
+    function_map.insert("day25 part1", day25::part1::main);
+    function_map.insert("day25 part2", day25::part2::main);
 
 
     if args.len() == 1 {
