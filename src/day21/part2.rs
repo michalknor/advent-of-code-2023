@@ -11,9 +11,10 @@ pub fn main(filename: &str) -> String {
     let garden_map: Vec<Vec<char>> = file_content
         .lines()
         .map(|line| 
-            line.chars().collect())
+            line.chars().collect()
+        )
         .collect();
-
+    
     solve(&garden_map).to_string()
 }
 

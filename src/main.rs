@@ -112,7 +112,6 @@ fn main() -> std::io::Result<()> {
     function_map.insert("day24 part2", day24::part2::main);
 
     function_map.insert("day25 part1", day25::part1::main);
-    function_map.insert("day25 part2", day25::part2::main);
 
 
     if args.len() == 1 {

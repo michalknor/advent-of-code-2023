@@ -46,7 +46,6 @@ fn solve(hailstones: &Vec<((i64, i64, i64), (i64, i64, i64))>) -> usize {
 	let mut count: usize = 0;
 
 	for (i, lf1) in linear_functions.iter().enumerate() {
-		println!("{}x + {}y + {} = 0", lf1.0, lf1.1, lf1.2);
 		for (j, lf2) in linear_functions.iter().enumerate() {
 			if i >= j {
 				continue;
@@ -93,19 +92,20 @@ fn is_point_in_the_past(hailstone: &((i64, i64, i64), (i64, i64, i64)), intersec
 		n if n > 0 => {
 			if (hailstone.0.0 as f64) > intersection.0 {
 				return true;
-			} 
+			}
+			false
 		},
 		n if n < 0 => {
 			if (hailstone.0.0 as f64) < intersection.0 {
 				return true;
-			} 
+			}
+			false
 		}
 		_ => {
 			if (hailstone.0.0 as f64) != intersection.0 {
 				return true;
-			} 
+			}
+			false
 		}
 	}
-
-	false
 }
