@@ -13,10 +13,10 @@ mod tests {
     use crate::day18;
     use crate::day19;
     use crate::day20;
-    use crate::day21;
+
     use crate::day22;
     use crate::day23;
-    use crate::day24;
+    
     use crate::day25;
 
     fn get_path(day: &str, file: &str) -> String {
@@ -153,5 +153,10 @@ mod tests {
     #[test]
     fn day23_part2() {
         assert_eq!(day23::part2::main(&get_path("day23", "test1.txt")), "154");
+    }
+    
+    #[test]
+    fn day25_part1() {
+        assert_eq!(day25::part1::main(&get_path("day25", "test1.txt")), "54");
     }
 }
